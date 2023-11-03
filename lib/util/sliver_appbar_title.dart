@@ -9,6 +9,7 @@ class InvisibleExpandedHeader extends StatefulWidget {
     Key? key,
     required this.child,
   }) : super(key: key);
+
   @override
   _InvisibleExpandedHeaderState createState() {
     return _InvisibleExpandedHeaderState();
@@ -33,7 +34,7 @@ class _InvisibleExpandedHeaderState extends State<InvisibleExpandedHeader> {
   }
 
   void _addListener() {
-    _position = Scrollable.of(context)?.position;
+    _position = Scrollable.of(context).position;
     _position?.addListener(_positionListener);
     _positionListener();
   }

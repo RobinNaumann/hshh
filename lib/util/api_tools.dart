@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:flutter/material.dart';
+import 'package:hshh/util/tri/tri_error/m_tri_error.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
 import 'package:lucide_icons/lucide_icons.dart';
@@ -29,7 +29,7 @@ extension ApiFuture<T> on Future<T> {
 
 Future<String> _apiDo(Uri uri, Future<Response> Function() worker) async {
   try {
-    logger.v("apiTools: sending request to $uri");
+    logger.t("apiTools: sending request to $uri");
     return (await worker.call()).bodyOrThrow(uri);
   } on ApiException catch (_) {
     rethrow;
@@ -53,7 +53,7 @@ Future<String> apiDelete({required Uri uri, JsonMap<String>? headers}) =>
 /// when something goes wrong
 Future<String> apiPost(
     {required Uri uri, JsonMap<String>? headers, Object? body}) {
-  logger.v("POST BODY: $body");
+  logger.t("POST BODY: $body");
   return _apiDo(uri, () => http.post(uri, headers: headers, body: body));
 }
 
@@ -79,23 +79,24 @@ extension ApiResponse on Response {
   }
 }
 
-class ApiException implements Exception {
+class ApiException extends TriError {
   final Uri uri;
   final int code;
-  final String message;
   final dynamic serverMessage;
 
-  final String uiTitle;
-  final String uiMessage;
-  final IconData uiIcon;
-  const ApiException(this.code, this.uri, this.serverMessage, this.message,
-      {this.uiTitle = "Die Daten konnten nicht geladen werden",
-      this.uiMessage = "Prüfen Sie Ihre Verbindung",
-      this.uiIcon = LucideIcons.cloudOff});
+  const ApiException(this.code, this.uri, this.serverMessage, super.error,
+      {super.uiTitle = "Die Daten konnten nicht geladen werden",
+      super.uiMessage = "Prüfen Sie Ihre Verbindung",
+      super.uiIcon = LucideIcons.cloudOff});
 
   @override
-  String toString() => "API-Exception: $message\n  Uri: '$uri':"
-      "\nServer response: $serverMessage";
+  String toString() => "ApiException: {"
+      "uiTitle: $uiTitle,"
+      "uiMessage: $uiMessage,"
+      "uiIcon $uiIcon,"
+      "uri: '$uri',"
+      "code: $code,"
+      "error: '$error'}";
 }
 
 class ApiConnectionException extends ApiException {

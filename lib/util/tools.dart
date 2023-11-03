@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:hshh/util/widgets/theme/theme.dart';
 import 'package:logger/logger.dart';
 
 final Logger logger = Logger(
@@ -21,13 +23,20 @@ void showSnackbar(BuildContext context, String text) {
   ScaffoldMessenger.of(context).showSnackBar(snackBar);
 }
 
+void pushPage(BuildContext context, Widget page) =>
+    Navigator.push(context, MaterialPageRoute(builder: (context) => page));
+
+void popPage(BuildContext context) => Navigator.maybePop(context);
+
+BoxDecoration get boxDeco => BoxDecoration(
+    border: Border.all(color: boxColor, width: 1),
+    borderRadius: BorderRadius.circular(10),
+    color: Colors.white);
+
 Widget box({required Widget child}) => Container(
-    padding: const EdgeInsets.all(15),
-    decoration: BoxDecoration(
-        border: Border.all(color: Colors.grey.shade300, width: 1.5),
-        borderRadius: BorderRadius.circular(10),
-        color: Colors.white),
-    child: child);
+    padding: const EdgeInsets.all(15), decoration: boxDeco, child: child);
+
+TextStyle get title => GoogleFonts.calistoga();
 
 const String dash = "—";
 

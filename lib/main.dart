@@ -1,11 +1,14 @@
-import 'package:flutter/material.dart';
-import 'package:hshh/cubits/courses_cubit.dart';
-import 'package:hshh/services/courses_service.dart';
-import 'package:hshh/widgets/group_list/group_list_v.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:hshh/cubits/c_courses.dart';
+import 'package:hshh/cubits/c_profiles.dart';
 
-import 'widgets/home/home_p.dart';
+import 'util/elbe_ui/elbe.dart';
+import 'util/widgets/theme/theme.dart';
+import 'widgets/home/p_home.dart';
 
-void main() {
+void main() async {
+  await Hive.initFlutter();
   runApp(const MyApp());
 }
 
@@ -14,16 +17,21 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CoursesCubit.provider(
-        cubit: CoursesCubit(),
-        child: MaterialApp(
-          title: 'Flutter Demo',
-          theme: ThemeData(
-            colorScheme: ColorScheme.fromSeed(
-                seedColor: Colors.deepPurple, background: Colors.white),
-            useMaterial3: true,
+    return MultiBlocProvider(
+        providers: [
+          BlocProvider(create: (_) => ProfilesCubit()),
+          BlocProvider(create: (_) => CoursesCubit()),
+        ],
+        child: Theme(
+          data: ThemeData(
+              color: ColorThemeData.fromColor(accent: Color(0xFF1885DF)),
+              type: TypeThemeData.preset(),
+              geometry: GeometryThemeData.preset()),
+          child: MaterialApp(
+            title: 'HsHH',
+            theme: themeData,
+            home: const HomePage(),
           ),
-          home: const HomePage(),
         ));
   }
 }

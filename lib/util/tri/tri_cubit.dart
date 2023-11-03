@@ -3,34 +3,31 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import 'tri_error/v_tri_error.dart';
 import 'tri_state.dart';
 
 abstract class TriCubit<T> extends Cubit<TriState<T>> {
   static Widget _small() => const SizedBox.shrink();
 
-  static Widget builderSmall<C extends TriCubit<T>, T>(
+  static Widget builder<C extends TriCubit<T>, T>(
           {Widget Function(C cubit)? onLoading,
           Widget Function(C cubit, dynamic error)? onError,
-          Widget Function(C cubit, T data)? onData}) =>
-      builder(
-          onLoading: onLoading ?? (_) => _small(),
-          onError: onError ?? (_, __) => _small(),
-          onData: onData ?? (_, __) => _small());
-
-  static Widget builder<C extends TriCubit<T>, T>(
-          {required Widget Function(C cubit) onLoading,
-          required Widget Function(C cubit, dynamic error) onError,
-          required Widget Function(C cubit, T data) onData}) =>
+          required Widget Function(C cubit, T data) onData,
+          bool small = false}) =>
       BlocBuilder<C, TriState<T>>(builder: (context, state) {
         final cubit = context.read<C>();
         return state.when(
-            onLoading: () => onLoading(cubit),
-            onError: (e) => onError(cubit, e),
+            onLoading: () =>
+                onLoading?.call(cubit) ??
+                (small ? _small() : loadingView(cubit)),
+            onError: (e) =>
+                onError?.call(cubit, e) ??
+                (small ? _small() : errorView(cubit, e)),
             onData: (d) => onData(cubit, d));
       });
 
   static Widget provider<C extends TriCubit>(
-          {required C cubit, required Widget child}) =>
+          {required C cubit, required Widget? child}) =>
       BlocProvider<C>(
         create: (context) => cubit,
         child: child,
@@ -62,6 +59,9 @@ abstract class TriCubit<T> extends Cubit<TriState<T>> {
 }
 
 Widget errorView(TriCubit cubit, dynamic error) =>
-    const Text("an error occurred here");
-Widget loadingView(TriCubit cubit) =>
-    const Center(child: CircularProgressIndicator.adaptive());
+    Center(child: TriErrorView(cubit: cubit, error: error));
+
+Widget loadingView(TriCubit cubit) => const Center(
+    child: Padding(
+        padding: EdgeInsets.all(10),
+        child: CircularProgressIndicator.adaptive()));
