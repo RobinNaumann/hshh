@@ -4,6 +4,7 @@ import 'package:hshh/util/extensions/widget_list.dart';
 import 'package:hshh/util/json_tools.dart';
 
 import '../../../cubits/c_profiles.dart';
+import '../../util/t_field.dart';
 
 class PField {
   final String id;
@@ -27,12 +28,11 @@ class PFieldsView extends StatelessWidget {
 
   const PFieldsView({super.key, required this.profile, required this.fields});
 
-  static Widget field(JsonMap<String> vs, PField field) => TextField(
-        controller: TextEditingController(text: vs.get(field.id)),
-        keyboardType: field.type,
-        onChanged: (v) => vs[field.id] = v,
-        decoration: InputDecoration(labelText: field.label),
-      );
+  static Widget field(JsonMap<String> vs, PField field) => TField(
+      controller: TextEditingController(text: vs.get(field.id)),
+      keyboardType: field.type,
+      label: field.label,
+      onChanged: (v) => vs[field.id] = v);
 
   @override
   Widget build(BuildContext context) {

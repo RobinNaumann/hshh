@@ -1,21 +1,21 @@
-import 'package:flutter/material.dart';
+import 'package:collection/collection.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:hshh/cubits/c_courses.dart';
-import 'package:hshh/util/extensions/widget_list.dart';
-import 'package:hshh/util/tools.dart';
 import 'package:hshh/widgets/course_page/p_course.dart';
+import 'package:hshh/widgets/home/v_card_icon.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 
+import '../../../cubits/c_group_info.dart';
 import '../../../models/m_course.dart';
+import '../../../util/elbe_ui/elbe.dart';
 
 class CourseSnippet extends StatelessWidget {
+  final bool showGroupname;
   final Course course;
 
-  const CourseSnippet({super.key, required this.course});
+  const CourseSnippet(
+      {super.key, required this.course, this.showGroupname = false});
 
-  String _getDays(BuildContext c) =>
-      course.days.map((i) => CoursesCubit.getWeekday(i) ?? "").join(" ");
   String _getLocations(BuildContext c) => course.locations
       .map((i) => c.read<CoursesCubit>().getLocation(i)?.name ?? "")
       .join("\n");
@@ -23,61 +23,71 @@ class CourseSnippet extends StatelessWidget {
   Widget _costView(CourseType type, List<double?> cost) {
     if (type == CourseType.courseFlexicard ||
         type == CourseType.courseSwimcard) {
-      return Icon(type == CourseType.courseFlexicard
-          ? LucideIcons.creditCard
-          : LucideIcons.waves);
+      return type == CourseType.courseFlexicard
+          ? const CardIcon.flexi()
+          : const CardIcon.swim();
     }
 
-    return Text(
+    return Text.bodyL(
         cost.isNotEmpty
-            ? (cost[0] != null ? "${cost[0]!.toStringAsFixed(2)}€" : "kA")
+            ? (cost[0] != null ? "${cost[0]!.toStringAsFixed(2)}€" : "k.A.")
             : "??",
-        style: GoogleFonts.calistoga(
-            //color: Colors.blue.shade900,
-            fontSize: 15));
+        variant: TypeVariants.bold);
   }
 
-  Widget _dataEntry(IconData icon, String label) => Row(
+  static Widget noName(bool integrated) => integrated
+      ? const Text.h6("Angebot ohne Name", colorState: ColorStates.disabled)
+      : Padded.only(
+          top: 1,
+          bottom: 0.6,
+          child: const Text.h6("Angebot ohne Name",
+              colorState: ColorStates.disabled));
+
+  Widget _dataEntry(IconData icon, Widget value) => Row(
         children: [
-          Icon(
-            icon,
-            size: 18,
-          ),
-          const SizedBox(width: 7),
-          Expanded(child: Text(label))
+          Icon(icon, style: TypeStyles.bodyS),
+          const Spaced(width: 1),
+          Expanded(child: value)
         ],
       );
 
   @override
   Widget build(BuildContext context) {
+    final loc = _getLocations(context);
+    final name = course.courseName;
+
     return _CourseSnippetBase(
         spacesAvailable: course.spacesAvailable,
-        child: InkWell(
+        child: Card(
+            heroTag: "course_${course.id}",
+            border: Border.none,
+            style: ColorStyles.plain,
             onTap: () => Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => CoursePage(course: course)),
+                      builder: (_) => CoursePage(
+                          course: course,
+                          cubit: context.read<GroupInfoCubit?>())),
                 ),
-            child: box(
-                child: Row(
+            child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Text(
-                        course.courseName,
-                        style: GoogleFonts.calistoga(fontSize: 16),
-                      ),
-                      _dataEntry(LucideIcons.clock, _getDays(context)),
-                      _dataEntry(LucideIcons.mapPin, _getLocations(context)),
-                    ].spaced(),
-                  ),
-                ),
+                    child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    name.trim().isEmpty ? noName(true) : Text.h6(name),
+                    if (showGroupname)
+                      Text.bodyM(course.groupName, variant: TypeVariants.bold),
+                    _dataEntry(
+                        LucideIcons.clock, WeekdayView(days: course.days)),
+                    if (loc.trim().isNotEmpty)
+                      _dataEntry(LucideIcons.mapPin, Text(loc)),
+                  ].spaced(),
+                )),
                 _costView(course.type, course.cost)
-              ],
-            ))));
+              ].spaced(),
+            )));
   }
 }
 
@@ -91,10 +101,12 @@ class _CourseSnippetBase extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-        decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10),
-            color: spacesAvailable ? null : Colors.black),
+    return Card(
+
+        //scheme: ColorSchemes.inverse,
+        style: spacesAvailable ? null : ColorStyles.minorAlertWarning,
+        //border: Border.none,
+        padding: RemInsets.zero,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -103,16 +115,38 @@ class _CourseSnippetBase extends StatelessWidget {
               Padding(
                 padding:
                     const EdgeInsets.symmetric(vertical: 7, horizontal: 10),
-                child: Text(
-                  "ausgebucht".toUpperCase(),
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 12,
-                      color: Colors.white),
-                ),
+                child: Text.bodyS("warteliste".toUpperCase(),
+                    variant: TypeVariants.bold, textAlign: TextAlign.center),
               )
           ],
         ));
+  }
+}
+
+class WeekdayView extends StatelessWidget {
+  static const List<String> _names = ["M", "D", "M", "D", "F", "S", "S"];
+  final Set<int> days;
+
+  const WeekdayView({super.key, required this.days});
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      border: Border.noneRect,
+      padding: RemInsets.zero,
+      color: Colors.transparent,
+      child: Row(
+          children: _names
+              .mapIndexed((i, e) => Text(
+                    e,
+                    colorState: days.contains(i)
+                        ? ColorStates.neutral
+                        : ColorStates.disabled,
+                    variant: days.contains(i)
+                        ? TypeVariants.bold
+                        : TypeVariants.regular,
+                  ))
+              .spaced(amount: 0.3)),
+    );
   }
 }

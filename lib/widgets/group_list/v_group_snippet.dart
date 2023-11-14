@@ -1,9 +1,7 @@
-import 'package:flutter/material.dart';
-import 'package:hshh/util/extensions/widget_list.dart';
-import 'package:hshh/util/tools.dart';
-import 'package:lucide_icons/lucide_icons.dart';
+import 'package:hshh/widgets/home/v_card_icon.dart';
 
 import '../../models/m_course.dart';
+import '../../util/elbe_ui/elbe.dart';
 import '../group_page/p_course_group.dart';
 
 class GroupSnippet extends StatelessWidget {
@@ -16,9 +14,9 @@ class GroupSnippet extends StatelessWidget {
   Widget _cardType() => Row(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
-          if (group.flexicard) const Icon(LucideIcons.creditCard),
-          if (group.swimcard) const Icon(LucideIcons.waves),
-        ].spaced(amount: 10, horizontal: true),
+          if (group.flexicard) const CardIcon.flexi(),
+          if (group.swimcard) const CardIcon.swim(),
+        ].spaced(vertical: false, amount: 0.5),
       );
 
   @override
@@ -28,19 +26,18 @@ class GroupSnippet extends StatelessWidget {
         context,
         MaterialPageRoute(builder: (context) => CourseGroupPage(group: group)),
       ),
-      child: box(
+      child: Card(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text(group.name, style: title.copyWith(fontSize: 16)),
-            const SizedBox(height: 20),
+            Text.h6(group.name),
             Row(
               children: [
                 Expanded(child: Text(_courseCount(group.courses.length))),
                 Expanded(child: _cardType())
-              ],
+              ].spaced(),
             )
-          ],
+          ].spaced(),
         ),
       ),
     );

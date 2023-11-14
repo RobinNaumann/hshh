@@ -4,6 +4,13 @@ class TriState<T> {
   factory TriState.error(dynamic e) => _Error(e);
   factory TriState.data(T data) => _Data(data);
 
+  bool get isData => this is _Data<T>;
+  bool get isLoading => this is _Loading<T>;
+  bool get isError => this is _Error<T>;
+
+  bool hasSameData(TriState other) =>
+      isData && other.isData && other.hashCode == hashCode;
+
   R when<R>(
           {required R Function() onLoading,
           required R Function(dynamic error) onError,
@@ -34,4 +41,10 @@ class _Error<T> extends TriState<T> {
 class _Data<T> extends TriState<T> {
   final T data;
   const _Data(this.data) : super._();
+
+  @override
+  int get hashCode => data.hashCode;
+
+  @override
+  bool operator ==(Object other) => hashCode == other.hashCode;
 }

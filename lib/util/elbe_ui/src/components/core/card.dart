@@ -1,10 +1,12 @@
+import 'package:hshh/util/elbe_ui/src/components/core/maybe_hero.dart';
+
 import '../../../elbe.dart';
 
 class Card extends ThemedWidget {
   final Clip? clipBehavior;
   final ColorSchemes scheme;
   final ColorStyles? style;
-  final StateColors? state;
+  final ColorStates? state;
 
   final RemInsets? margin;
   final RemInsets? padding;
@@ -14,6 +16,10 @@ class Card extends ThemedWidget {
   final double? width;
 
   final Color? color;
+
+  final VoidCallback? onTap;
+  final VoidCallback? onLongTap;
+  final String? heroTag;
 
   final Widget child;
 
@@ -30,20 +36,35 @@ class Card extends ThemedWidget {
       this.border,
       this.width,
       this.height,
+      this.onTap,
+      this.onLongTap,
+      this.heroTag,
       required this.child});
 
+  Widget _card(ThemeData theme) => MaybeHero(
+        tag: heroTag,
+        child: Box(
+            scheme: scheme,
+            style: style,
+            state: state,
+            clipBehavior: clipBehavior,
+            width: width,
+            height: height,
+            padding: padding,
+            margin: margin,
+            constraints: constraints,
+            border: border ?? theme.geometry.border,
+            color: color,
+            child: child),
+      );
+
   @override
-  Widget make(context, theme) => Box(
-      scheme: scheme,
-      style: style,
-      state: state,
-      clipBehavior: clipBehavior,
-      width: width,
-      height: height,
-      padding: padding,
-      margin: margin,
-      constraints: constraints,
-      border: border ?? theme.geometry.border,
-      color: color,
-      child: child);
+  Widget make(context, theme) => onTap != null
+      ? InkWell(
+          splashColor: Colors.transparent,
+          highlightColor: Colors.transparent,
+          onTap: onTap,
+          onLongPress: onLongTap,
+          child: _card(theme))
+      : _card(theme);
 }

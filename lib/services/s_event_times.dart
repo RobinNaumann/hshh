@@ -16,12 +16,16 @@ class EventTimesService {
   static final _uri =
       Uri.https('buchung.hochschulsport-hamburg.de', '/cgi/anmeldung.fcgi');
 
-  static Future<EventTimesSession> getTimes(String bookingId) async {
+  static Future<EventTimesSession> getTimes(
+      String groupId, String bsCode, String bookingId) async {
+    print("GET_TIMES");
     final html = parse(await apiPost(uri: _uri, headers: {
+      'Origin': "https://buchung.hochschulsport-hamburg.de",
       'Referer':
-          "https://buchung.hochschulsport-hamburg.de/angebote/Wintersemester_2023_2024/_Hallenfussball.html"
+          "https://buchung.hochschulsport-hamburg.de/", //angebote/Wintersemester_2023_2024/_Triathlon.html"
     }, body: {
-      bookingId: "HsHH"
+      "BS_Code": bsCode,
+      bookingId: "Vormerkliste"
     }));
     final bs = html.getElementsByClassName("bs_form_row");
 
@@ -79,6 +83,6 @@ class EventTimesService {
 
   static DateTime _parseTime(DateTime day, String time) {
     final parts = time.split(".").listMap(int.parse);
-    return day.copyWith(hour: parts[1], minute: parts[0]);
+    return day.copyWith(hour: parts[0], minute: parts[1]);
   }
 }

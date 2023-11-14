@@ -17,8 +17,8 @@ class CoursesCubit extends TriCubit<CoursesInfo> {
       state.whenOrNull<EventLocation?>(onData: (d) => d.locations.maybe(index));
 
   static String? getWeekday(int index,
-          {bool withDot = false, bool long = false}) =>
-      (long
+          {bool withDot = false, bool long = false, bool withS = false}) =>
+      (long || withS
               ? [
                   "Montag",
                   "Dienstag",
@@ -30,5 +30,6 @@ class CoursesCubit extends TriCubit<CoursesInfo> {
                 ]
               : ["Mo", "Di", "Mi", "Do", "Fr", "Sa", "So"])
           .maybe(index)
-          ?.add(withDot ? "." : null);
+          ?.add(withDot ? "." : null)
+          .add(withS ? "s" : null);
 }

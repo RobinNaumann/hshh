@@ -1,8 +1,7 @@
-import 'package:flutter/material.dart';
 import 'package:hshh/models/m_course.dart';
 import 'package:hshh/models/m_group_info.dart';
-import 'package:hshh/util/extensions/widget_list.dart';
 
+import '../../../util/elbe_ui/elbe.dart';
 import 'v_course_snippet.dart';
 
 class CourseList extends StatelessWidget {
@@ -15,10 +14,7 @@ class CourseList extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: courses
-            .map((e) => e.withBookingId(groupInfo.bookingId(e.id)))
-            .map((c) => CourseSnippet(course: c))
-            .spaced(amount: 20)
+        children: courses.map((c) => CourseSnippet(course: c)).spaced()
           ..add(const SizedBox(height: 50)));
   }
 }

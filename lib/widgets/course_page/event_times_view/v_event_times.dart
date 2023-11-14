@@ -1,27 +1,95 @@
-import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hshh/cubits/c_event_times.dart';
+import 'package:hshh/models/m_group_info.dart';
+import 'package:hshh/services/s_group_info.dart';
 import 'package:hshh/util/extensions/maybe_map.dart';
-import 'package:hshh/util/extensions/widget_list.dart';
 import 'package:hshh/util/tri/tri_cubit.dart';
 import 'package:hshh/widgets/course_page/event_times_view/v_event_time_snippet.dart';
+import 'package:url_launcher/url_launcher.dart';
+
+import '../../../cubits/c_group_info.dart';
+import '../../../util/elbe_ui/elbe.dart';
 
 class EventTimesView extends StatelessWidget {
-  final String bookingId;
-  const EventTimesView({super.key, required this.bookingId});
+  final bool isFree;
+  final String courseId;
+  const EventTimesView(
+      {super.key, required this.courseId, required this.isFree});
 
   @override
   Widget build(BuildContext context) {
-    return EventTimesCubit.provider(
-        cubit: EventTimesCubit(bookingId: bookingId),
+    print("BUILD TIMESVIEW");
+    return GroupInfoCubit.builder(
+        key: Key("SUPER"),
+        onLoading: (_) => const Spaced(),
+        onData: (cubit, data) {
+          if (!isFree) return _NoTimesWidget.cost(data.webLink);
+          final c = data.course(courseId);
+
+          return c == null
+              ? _NoTimesWidget.notFound(data.webLink)
+              : _EventTimesView(c: c, bsCode: "");
+        });
+  }
+}
+
+class _EventTimesView extends StatelessWidget {
+  final CourseInfo c;
+  final String bsCode;
+  const _EventTimesView({super.key, required this.c, required this.bsCode});
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocProvider<EventTimesCubit>(
+        key: const Key("KONST"),
+        create: (_) => EventTimesCubit(
+            groupId: c.groupId, bookingId: c.bookingId, bsCode: bsCode),
         child: EventTimesCubit.builder(
             onLoading: loadingView,
             onError: errorView,
-            onData: (c, data) => data.times.isEmpty
-                ? const Text("TODO: keine Termine verfügbar")
+            onData: (_, data) => data.times.isEmpty
+                ? _NoTimesWidget.notFound(
+                    GroupInfoService.getCourseLink(c.groupId))
                 : Column(
                     children: data.times
                         .listMap((e) => EventTimeSnippet(eventTime: e))
                         .spaced(),
                   )));
+  }
+}
+
+class _NoTimesWidget extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final Uri link;
+  const _NoTimesWidget(
+      {required this.icon, required this.label, required this.link});
+
+  const _NoTimesWidget.notFound(this.link)
+      : icon = Icons.searchX,
+        label = "Wir konnten keine Termine finden. "
+            "Prüfe die Beschreibung oder öffne die Website.";
+
+  const _NoTimesWidget.cost(this.link)
+      : icon = Icons.coins,
+        label = "Zahlungen können nicht über die App getätigt werden. "
+            "Öffne für diesen Kurs bitte die Website.";
+
+  @override
+  Widget build(BuildContext context) {
+    return Padded.only(
+        top: 1,
+        child: Column(
+            children: [
+          Icon(icon),
+          Text(
+            label,
+            textAlign: TextAlign.center,
+          ),
+          Button.action(
+              icon: Icons.externalLink,
+              label: "Website öffnen",
+              onTap: () => launchUrl(link))
+        ].spaced()));
   }
 }

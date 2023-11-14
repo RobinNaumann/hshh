@@ -1,4 +1,12 @@
-enum EventTimeState { bookable, closed, waitinglist }
+enum EventTimeState {
+  bookable,
+  closed,
+  waitinglist;
+
+  bool get isBookable => this == EventTimeState.bookable;
+  bool get isClosed => this == EventTimeState.closed;
+  bool get isWaitinglist => this == EventTimeState.waitinglist;
+}
 
 class EventTime {
   final DateTime start;

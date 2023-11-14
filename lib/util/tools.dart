@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:hshh/util/widgets/theme/theme.dart';
 import 'package:logger/logger.dart';
 
 final Logger logger = Logger(
@@ -29,7 +28,7 @@ void pushPage(BuildContext context, Widget page) =>
 void popPage(BuildContext context) => Navigator.maybePop(context);
 
 BoxDecoration get boxDeco => BoxDecoration(
-    border: Border.all(color: boxColor, width: 1),
+    border: Border.all(color: Colors.green, width: 1),
     borderRadius: BorderRadius.circular(10),
     color: Colors.white);
 

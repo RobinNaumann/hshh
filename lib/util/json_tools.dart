@@ -28,6 +28,11 @@ extension JsonFunctions<D> on JsonMap<D> {
   T? maybeCast<T>(String key) =>
       (!containsKey(key) || this[key] == null) ? null : asCast<T>(key);
 
+  String? asFormData() => entries
+      .map((e) =>
+          "${Uri.encodeComponent(e.key).replaceAll("%20", "+")}=${Uri.encodeComponent(e.value.toString()).replaceAll("%20", "+")}")
+      .join("&");
+
   T? tryCast<T>(String key) {
     try {
       return asCast<T>(key);

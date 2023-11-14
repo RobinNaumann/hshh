@@ -15,7 +15,6 @@ class ColorTheme extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print(data.light.primary.majorAlertError.neutral.back);
     return ElbeInheritedTheme<ColorThemeData>(data: data, child: child);
   }
 }

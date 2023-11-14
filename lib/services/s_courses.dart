@@ -31,6 +31,7 @@ class CoursesService {
       c.map((e) => "$e").toList().asMap();
 
   static Map<int, EventLocation> _parseLocations(List locations) {
+    var err = false;
     Map<int, EventLocation> res = {};
     for (int i = 0; i < locations.length; i++) {
       try {
@@ -38,8 +39,10 @@ class CoursesService {
         res[i] = EventLocation(name: l[0], lat: l[1], long: l[2]);
       } catch (e) {
         logger.t("courses_service: a EventLocation could not be parsed");
+        err = true;
       }
     }
+    if (res.isEmpty && err) throw Exception();
     return res;
   }
 

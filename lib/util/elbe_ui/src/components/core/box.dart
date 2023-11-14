@@ -18,7 +18,7 @@ class Box extends ThemedWidget {
   final Clip? clipBehavior;
   final ColorSchemes scheme;
   final ColorStyles? style;
-  final StateColors? state;
+  final ColorStates? state;
 
   final Color? color;
 
@@ -57,6 +57,25 @@ class Box extends ThemedWidget {
       this.rawMargin,
       this.rawConstraints,
       required this.child});
+
+  const Box.plain(
+      {super.key,
+      this.clipBehavior,
+      this.padding,
+      this.margin,
+      this.decoration,
+      this.constraints,
+      this.width,
+      this.height,
+      this.rawPadding,
+      this.rawMargin,
+      this.rawConstraints,
+      required this.child})
+      : scheme = ColorSchemes.primary,
+        style = null,
+        state = null,
+        color = null,
+        border = Border.noneRect;
 
   @override
   Widget make(context, theme) {

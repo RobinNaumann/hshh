@@ -6,10 +6,12 @@ import 'package:hshh/widgets/profiles/profile_list/v_profile_snippet.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 
 class ProfileListView extends StatelessWidget {
-  const ProfileListView({super.key});
+  final int? selectedId;
+  final Function(int id, Profile p) onPressed;
+  const ProfileListView({super.key, this.selectedId, required this.onPressed});
 
-  Widget _addBtn(BuildContext context) => Button(
-      onPressed: () => pushPage(context, const ProfileEditPage.create()),
+  Widget _addBtn(BuildContext context) => Button.action(
+      onTap: () => pushPage(context, const ProfileEditPage.create()),
       icon: LucideIcons.plus,
       label: "neue Person anlegen");
 
@@ -28,9 +30,12 @@ class ProfileListView extends StatelessWidget {
                     textAlign: TextAlign.center,
                   ),
                 ),
-              ...data.entries.map<Widget>(
-                  (e) => ProfileSnippet(id: e.key, profile: e.value)),
-              _addBtn(context)
+              ...data.entries.map<Widget>((e) => ProfileSnippet(
+                  id: e.key,
+                  profile: e.value,
+                  onPressed: onPressed,
+                  selected: e.key == selectedId)),
+              _addBtn(context),
             ].spaced()));
   }
 }

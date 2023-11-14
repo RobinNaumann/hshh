@@ -1,18 +1,18 @@
 import 'package:collection/collection.dart';
 import 'package:hshh/cubits/c_profiles.dart';
 import 'package:hshh/services/d_institutions.dart';
-import 'package:hshh/util/extensions/maybe_map.dart';
 import 'package:hshh/util/json_tools.dart';
+import 'package:hshh/util/tools.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 
 import '../../../util/elbe_ui/elbe.dart';
-import '../../../util/widgets/theme/rtitle.dart';
+import '../profile_edit/p_profile_edit.dart';
 
 class ProfileSnippet extends StatelessWidget {
   final bool selected;
   final int id;
   final Profile profile;
-  final VoidCallback? onPressed;
+  final Function(int id, Profile p)? onPressed;
 
   const ProfileSnippet(
       {super.key,
@@ -40,25 +40,32 @@ class ProfileSnippet extends StatelessWidget {
   Widget build(BuildContext context) {
     //final cs = Theme.of(context).colorScheme;
     return Card(
-        child: Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Expanded(
-          child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                RTitle.h3(
+        heroTag: "profile_$id",
+        onLongTap: onPressed != null
+            ? () => pushPage(
+                context, ProfileEditPage(profileKey: id, profile: profile))
+            : null,
+        onTap: onPressed != null ? () => onPressed!(id, profile) : null,
+        style: selected ? ColorStyles.minorAccent : null,
+        state: onPressed != null ? null : ColorStates.disabled,
+        child: Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
+          Expanded(
+            child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Text.h6(
                     "${profile.get("vorname") ?? '?'} ${profile.get("name") ?? '?'}",
-                    padded: false),
-                _typeView()
-              ].spaced()),
-        ),
-        const Padding(
-          padding: EdgeInsets.only(left: 10),
-          child: Icon(LucideIcons.check),
-        )
-      ],
-    ));
+                  ),
+                  _typeView()
+                ].spaced()),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(left: 10),
+            child: selected
+                ? const Icon(LucideIcons.check)
+                : const SizedBox.shrink(),
+          )
+        ]));
   }
 }

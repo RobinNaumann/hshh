@@ -1,11 +1,10 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hshh/cubits/c_profiles.dart';
+import 'package:hshh/util/elbe_ui/elbe.dart';
 import 'package:hshh/util/tools.dart';
 import 'package:hshh/widgets/profiles/profile_edit/v_p_fields.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 
-import '../../../util/widgets/theme/rtitle.dart';
 import 'v_p_institution.dart';
 
 class ProfileEditPage extends StatefulWidget {
@@ -60,7 +59,7 @@ class ProfileEditPage extends StatefulWidget {
 }
 
 class _PersonEditPageState extends State<ProfileEditPage> {
-  bool get createMode => widget.key == null;
+  bool get createMode => widget.profileKey == null;
   late final Profile pData = {...?widget.profile};
 
   void delete() {
@@ -85,38 +84,30 @@ class _PersonEditPageState extends State<ProfileEditPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-            onPressed: () => popPage(context), icon: const Icon(LucideIcons.x)),
-        title: Text("Person ${createMode ? 'anlegen' : 'bearbeiten'}"),
-        actions: createMode
-            ? null
-            : [
-                IconButton(
-                    onPressed: delete, icon: const Icon(LucideIcons.trash))
-              ],
-      ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
+      heroTag:
+          widget.profileKey != null ? "profile_${widget.profileKey}" : null,
+      title: "Person ${createMode ? 'anlegen' : 'bearbeiten'}",
+      leadingIcon: const LeadingIcon.close(),
+      actions: createMode
+          ? null
+          : [IconButton.integrated(onTap: delete, icon: LucideIcons.trash)],
+      body: Padded.all(
         child: ListView(
+          clipBehavior: Clip.none,
           children: [
-            const RTitle.h3("Status"),
+            const Title.h5("Status", topPadded: false),
             PInstitutionView(profile: pData),
-            const SizedBox(height: 20),
             //
-            const RTitle.h3("Persönliche Angaben"),
+            const Title.h5("Persönliche Angaben"),
             PFieldsView(profile: pData, fields: ProfileEditPage._profileFields),
-            const SizedBox(height: 20),
             //
-            const RTitle.h3("Kontakt"),
+            const Title.h5("Kontakt"),
             PFieldsView(profile: pData, fields: ProfileEditPage._contactFields),
             const SizedBox(height: 20),
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 20),
-              child: ElevatedButton.icon(
-                  icon: const Icon(LucideIcons.check),
-                  onPressed: save,
-                  label: const Text("speichern")),
+              child: Button.minor(
+                  icon: LucideIcons.check, onTap: save, label: "speichern"),
             )
           ],
         ),

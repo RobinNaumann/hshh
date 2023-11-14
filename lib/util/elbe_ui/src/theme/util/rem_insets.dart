@@ -3,6 +3,10 @@ import 'package:flutter/widgets.dart' as w;
 
 class Border {
   static const Border none = Border(pixelWidth: 0, color: Colors.transparent);
+  static const Border noneRect = Border(
+      pixelWidth: 0,
+      color: Colors.transparent,
+      borderRadius: BorderRadius.zero);
 
   final double? pixelWidth;
   final BorderStyle? style;
@@ -23,6 +27,19 @@ class Border {
       this.borderRadius = const BorderRadius.all(Radius.circular(10)),
       this.color,
       this.strokeAlign});
+
+  Border copyWith(
+          {double? pixelWidth,
+          BorderStyle? style,
+          double? strokeAlign,
+          Color? color,
+          BorderRadius? borderRadius}) =>
+      Border(
+          pixelWidth: pixelWidth ?? this.pixelWidth,
+          style: style ?? this.style,
+          strokeAlign: strokeAlign ?? this.strokeAlign,
+          color: color ?? this.color,
+          borderRadius: borderRadius ?? this.borderRadius);
 
   Border merged(Border? other) => other == null
       ? this

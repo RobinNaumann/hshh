@@ -85,26 +85,11 @@ class Course {
   final bool spacesAvailable;
   final int categoryId;
 
-  final String? bookingId;
-
   final CourseType type;
 
   List<int> get locations => events.map((e) => e.locationId).toList();
 
   Set<int> get days => events.fold({}, (p, e) => p..add(e.weekday));
-
-  Course withBookingId(String? bookingId) => Course(
-      id: id,
-      groupName: groupName,
-      courseName: courseName,
-      events: events,
-      timespan: timespan,
-      organizers: organizers,
-      cost: cost,
-      spacesAvailable: spacesAvailable,
-      categoryId: categoryId,
-      type: type,
-      bookingId: bookingId);
 
   const Course(
       {required this.id,
@@ -116,8 +101,7 @@ class Course {
       required this.cost,
       required this.spacesAvailable,
       required this.categoryId,
-      required this.type,
-      this.bookingId});
+      required this.type});
 
   @override
   String toString() => "Course{"
@@ -131,4 +115,10 @@ class Course {
       "spacesAvailable: $spacesAvailable, "
       "categoryId: $categoryId, "
       "type: $type}";
+
+  @override
+  int get hashCode => toString().hashCode;
+
+  @override
+  bool operator ==(Object other) => hashCode == other.hashCode;
 }

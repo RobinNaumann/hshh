@@ -6,7 +6,8 @@ class Icon extends ThemedWidget {
   final IconData icon;
   final String? semanticLabel;
   final Color? color;
-  final TypeStyle? style;
+  final TypeStyles? style;
+  final TypeStyle? resolvedStyle;
   final Badge? badge;
 
   const Icon(
@@ -15,6 +16,7 @@ class Icon extends ThemedWidget {
     this.color,
     this.semanticLabel,
     this.style,
+    this.resolvedStyle,
     this.badge,
   });
 
@@ -26,7 +28,9 @@ class Icon extends ThemedWidget {
 
   @override
   Widget make(context, theme) {
-    final appliedType = theme.type.selected.merge(style);
+    final appliedType = theme.type.selected
+        .merge(style != null ? theme.type.get(style!) : const TypeStyle())
+        .merge(resolvedStyle);
     final appliedColor = color ?? theme.color.activeLayer.front;
     final appliedSize = appliedType.iconSize ?? 24;
 

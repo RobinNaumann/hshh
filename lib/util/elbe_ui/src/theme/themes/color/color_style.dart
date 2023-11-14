@@ -8,12 +8,16 @@ extension _Fract on double {
   double get norm => this.clamp(0.0, 1.0);
 }
 
+extension _Clamp on int {
+  bool absBetween(int a, int b) => abs() >= a && abs() < b;
+}
+
 extension RichColor on Color {
   bool get isBright => brightness >= 0.5;
-  bool get isColored =>
-      (red - green).abs() > 20 ||
-      (red - blue).abs() > 20 ||
-      (green - blue).abs() > 20;
+  bool get isMinorColored =>
+      (red - green).absBetween(20, 50) ||
+      (red - blue).absBetween(20, 50) ||
+      (green - blue).absBetween(20, 50);
   double get brightness => computeLuminance();
 
   Color facM(double fac) {
@@ -21,6 +25,12 @@ extension RichColor on Color {
     final l = hsl.lightness;
     return hsl.withLightness((l - (l - 0.5) * 2 * fac).norm).toColor();
   }
+
+  Color interAll(double factor, [Color color = grey]) => Color.fromARGB(
+      255,
+      (red + (color.red - red) * factor).round().clamp(0, 255),
+      (green + (color.green - green) * factor).round().clamp(0, 255),
+      (blue + (color.blue - blue) * factor).round().clamp(0, 255));
 
   Color inter(double factor, [Color color = grey]) {
     var hsl = HSLColor.fromColor(this);
@@ -51,13 +61,13 @@ class LayerColor extends Color {
           {required Color back, Color? front, Color? border}) =>
       LayerColor(
           back: back,
-          front: back.isColored
+          front: back.isMinorColored
               ? back.inter(1.4)
               : front ?? (back.isBright ? Colors.black : Colors.white),
           border: border ?? back.inter(0.4));
 }
 
-enum StateColors { neutral, hovered, pressed, disabled }
+enum ColorStates { neutral, hovered, pressed, disabled }
 
 class StateColor {
   final LayerColor neutral;
@@ -78,7 +88,7 @@ class StateColor {
       Color? disabled}) {
     final LayerColor? nlk = (neutral is LayerColor) ? neutral : null;
     final dis = neutral.fac(2.2).desaturated;
-    final disFront = (dis.isBright ? Colors.black : Colors.white).inter(0.9);
+    final disFront = (dis.isBright ? Colors.black : Colors.white).inter(1.1);
     return StateColor(
         neutral: nlk ?? LayerColor.fromColor(back: neutral),
         hovered: (hovered is LayerColor)
@@ -93,10 +103,15 @@ class StateColor {
                 front: nlk?.front.fac(0.7)),
         disabled: (disabled is LayerColor)
             ? disabled
-            : LayerColor.fromColor(
-                back: dis, front: nlk?.front.desaturated ?? disFront));
+            : (disabled != null)
+                ? LayerColor.fromColor(back: disabled)
+                : LayerColor.fromColor(
+                    back: dis, front: nlk?.front.desaturated ?? disFront));
   }
-  LayerColor get(StateColors state) =>
+
+  LayerColor? getMaybe(ColorStates? state) => state != null ? get(state) : null;
+
+  LayerColor get(ColorStates state) =>
       [neutral, hovered, pressed, disabled][state.index];
 
   StateColor copyWith(
@@ -113,6 +128,8 @@ class StateColor {
 
 enum ColorStyles {
   plain,
+  action,
+  actionIntegrated,
   minorAccent,
   majorAccent,
   minorAlertError,
@@ -132,6 +149,8 @@ class ColorStyle {
   static const colorInfo = Color(0xFF2463AA);
 
   final StateColor plain;
+  final StateColor action;
+  final StateColor actionIntegrated;
   final StateColor minorAccent;
   final StateColor majorAccent;
   final StateColor minorAlertError;
@@ -145,6 +164,8 @@ class ColorStyle {
 
   const ColorStyle(
       {required this.plain,
+      required this.action,
+      required this.actionIntegrated,
       required this.minorAccent,
       required this.majorAccent,
       required this.minorAlertError,
@@ -160,6 +181,8 @@ class ColorStyle {
       {required Color base,
       required Color accent,
       StateColor? plain,
+      StateColor? action,
+      StateColor? actionIntegrated,
       StateColor? minorAccent,
       StateColor? majorAccent,
       StateColor? minorAlertError,
@@ -172,11 +195,23 @@ class ColorStyle {
       StateColor? majorAlertInfo}) {
     const mF = 0.8;
 
+    final transparent = base.withAlpha(0);
+
     return ColorStyle(
         plain: plain ?? StateColor.fromColor(neutral: base),
+        action: action ??
+            StateColor.fromColor(
+                neutral:
+                    LayerColor.fromColor(back: transparent, front: accent)),
+        actionIntegrated:
+            actionIntegrated ?? StateColor.fromColor(neutral: transparent),
         minorAccent: minorAccent ??
             StateColor.fromColor(neutral: accent.inter(mF, base)),
-        majorAccent: majorAccent ?? StateColor.fromColor(neutral: accent),
+        majorAccent: majorAccent ??
+            StateColor.fromColor(
+                neutral: accent,
+                disabled: LayerColor.fromColor(
+                    back: base.inter(0.3), front: base.inter(1.3))),
         minorAlertError: minorAlertError ??
             StateColor.fromColor(neutral: colorError.inter(mF, base)),
         majorAlertError:
@@ -195,8 +230,12 @@ class ColorStyle {
             minorAlertInfo ?? StateColor.fromColor(neutral: colorInfo));
   }
 
+  StateColor? getMaybe(ColorStyles? s) => s != null ? get(s) : null;
+
   StateColor get(ColorStyles s) => [
         plain,
+        action,
+        actionIntegrated,
         minorAccent,
         majorAccent,
         minorAlertError,
@@ -229,7 +268,8 @@ class ColorScheme {
               primary ?? ColorStyle.fromColor(base: background, accent: accent),
           secondary: secondary ??
               ColorStyle.fromColor(
-                  base: background.inter(0.1), accent: accent.inter(0.1)),
+                  base: background.interAll(0.07, accent),
+                  accent: accent.inter(0.1)),
           inverse: inverse ??
               ColorStyle.fromColor(accent: accent, base: background.inter(2)));
 

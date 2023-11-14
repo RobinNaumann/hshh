@@ -1,7 +1,7 @@
 import 'package:hshh/util/elbe_ui/elbe.dart';
 import 'package:hshh/util/elbe_ui/src/theme/util/inherited_theme.dart';
 
-import 'type_style.dart';
+const titleFont = 'Calistoga';
 
 enum TypeStyles { bodyS, bodyM, bodyL, h6, h5, h4, h3, h2, h1 }
 
@@ -34,16 +34,16 @@ class TypeThemeData extends ElbeInheritedThemeData {
 
   TypeStyle get selected => _selected ?? bodyM;
 
-  factory TypeThemeData.preset() => TypeThemeData(
-      bodyS: TypeStyle(fontSize: 16),
-      bodyM: TypeStyle(fontSize: 16),
-      bodyL: TypeStyle(fontSize: 16),
-      h6: TypeStyle(fontSize: 16),
-      h5: TypeStyle(fontSize: 16),
-      h4: TypeStyle(fontSize: 16),
-      h3: TypeStyle(fontSize: 16),
-      h2: TypeStyle(fontSize: 16),
-      h1: TypeStyle(fontSize: 16));
+  factory TypeThemeData.preset() => const TypeThemeData(
+      bodyS: TypeStyle(fontSize: 12),
+      bodyM: TypeStyle(fontSize: 15),
+      bodyL: TypeStyle(fontSize: 18),
+      h6: TypeStyle(fontSize: 16, fontFamily: titleFont),
+      h5: TypeStyle(fontSize: 19, fontFamily: titleFont),
+      h4: TypeStyle(fontSize: 20, fontFamily: titleFont),
+      h3: TypeStyle(fontSize: 23, fontFamily: titleFont),
+      h2: TypeStyle(fontSize: 25, fontFamily: titleFont),
+      h1: TypeStyle(fontSize: 27, fontFamily: titleFont));
 
   TypeThemeData copyWith(
           {TypeStyle? bodyS,

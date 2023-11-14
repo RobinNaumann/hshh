@@ -5,9 +5,9 @@ enum TypeVariants { regular, bold, italic, boldItalic }
 
 class TypeStyle {
   final String? package;
-  final String fontFamily;
+  final String? fontFamily;
 
-  final TypeVariants? variant;
+  final TypeVariants variant;
   final double? fontSize;
   final double? iconSize;
   final TextDecoration? decoration;
@@ -15,17 +15,20 @@ class TypeStyle {
   final List<FontFeature>? fontFeatures;
 
   const TypeStyle(
-      {this.variant,
+      {this.variant = TypeVariants.regular,
       this.fontSize,
-      this.iconSize,
+      double? iconSize,
       this.fontFeatures,
       this.decoration,
-      this.fontFamily = "Calistoga",
-      this.package = ""});
+      this.fontFamily,
+      this.package})
+      : iconSize = iconSize ?? ((fontSize ?? 16) * 1.6);
 
   TypeStyle merge(TypeStyle? style) => TypeStyle(
       variant: style?.variant ?? variant,
       fontSize: style?.fontSize ?? fontSize,
+      fontFamily: style?.fontFamily ?? fontFamily,
+      package: style?.package ?? package,
       iconSize: style?.iconSize ?? iconSize,
       decoration: style?.decoration ?? decoration,
       fontFeatures: style?.fontFeatures ?? fontFeatures);
@@ -60,11 +63,11 @@ class TypeStyle {
       fontStyle:
           (variant == TypeVariants.italic || variant == TypeVariants.boldItalic)
               ? FontStyle.italic
-              : null,
+              : FontStyle.normal,
       fontWeight:
           (variant == TypeVariants.bold || variant == TypeVariants.boldItalic)
               ? FontWeight.bold
-              : null,
+              : FontWeight.normal,
       fontFeatures: fontFeatures,
       decoration: decoration);
 }

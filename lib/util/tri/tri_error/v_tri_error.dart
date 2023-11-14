@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:hshh/util/elbe_ui/elbe.dart';
 import 'package:hshh/util/tools.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 
@@ -26,16 +26,18 @@ class TriErrorView extends StatelessWidget {
         children: [
           Icon(richError.uiIcon ?? LucideIcons.alertCircle),
           const SizedBox(height: 18),
-          InkWell(
+          GestureDetector(
             onTap: () => pushPage(context, _ErrorTechView(error: richError)),
             child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Text(richError.uiTitle,
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(
-                          fontWeight: FontWeight.bold, fontSize: 17)),
-                  const SizedBox(height: 3),
+                  Text(
+                    richError.uiTitle,
+                    textAlign: TextAlign.center,
+                    style: TypeStyles.bodyL,
+                    variant: TypeVariants.bold,
+                  ),
+                  const Spaced.vertical(0.5),
                   Text(
                     richError.uiMessage,
                     textAlign: TextAlign.center,
@@ -60,7 +62,10 @@ class _ErrorTechView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(title: const Text("Fehler Details")),
-        body: SingleChildScrollView(child: Text(error.toString())));
+        title: "Fehler Details",
+        leadingIcon: const LeadingIcon.close(),
+        body: Padded.all(
+            child: SingleChildScrollView(
+                clipBehavior: Clip.none, child: Text(error.toString()))));
   }
 }

@@ -1,78 +1,57 @@
-import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:hshh/util/sliver_appbar_title.dart';
 import 'package:hshh/util/tools.dart';
+import 'package:hshh/widgets/favorites/p_favorite.dart';
 import 'package:hshh/widgets/group_list/v_group_list.dart';
+import 'package:hshh/widgets/home/v_group_filter.dart';
 import 'package:hshh/widgets/profiles/profile_list/p_profile_list.dart';
-import 'package:hshh/widgets/profiles/profile_edit/p_profile_edit.dart';
-import 'package:lucide_icons/lucide_icons.dart';
+import 'package:hshh/widgets/settings/p_settings.dart';
+
+import '../../util/elbe_ui/elbe.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
-  Widget _hero(BuildContext c) => SliverAppBar(
-        actions: [
-          IconButton(
-              onPressed: () => pushPage(c, const ProfileListPage()),
-              icon: const Icon(LucideIcons.users))
-        ],
-        pinned: true,
-        backgroundColor: Colors.white,
-        surfaceTintColor: Colors.white,
-        title: InvisibleExpandedHeader(
-            child: Text("HSHH", style: GoogleFonts.calistoga())),
-        expandedHeight: 300.0,
-        flexibleSpace: Stack(
-          fit: StackFit.expand,
-          children: [
-            Container(
-              color: Colors.grey.shade200,
-              margin: const EdgeInsets.only(bottom: 2),
-              child: FlexibleSpaceBar(
-                  //title: Text('SliverAppBar'),
-                  background: Stack(
-                fit: StackFit.expand,
-                children: [
-                  Image.network(
-                      "https://mir-s3-cdn-cf.behance.net/project_modules/max_1200/4476ed87793337.5dc2f046e46bc.gif",
-                      fit: BoxFit.cover,
-                      alignment: Alignment.centerLeft),
-                  Center(
-                    child: Text(
-                      "HsHH",
-                      style: GoogleFonts.calistoga(
-                          fontSize: 120, color: Colors.white),
-                    ),
-                  ),
-                ],
-              )),
-            ),
-            Align(
-              alignment: Alignment.bottomCenter,
-              child: Container(
-                height: 22,
-                decoration: const BoxDecoration(
-                    borderRadius:
-                        BorderRadius.vertical(top: Radius.circular(20)),
-                    color: Colors.white),
-              ),
-            )
-          ],
-        ),
-      );
-
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        body: CustomScrollView(
-      slivers: [
-        _hero(context),
-        const SliverToBoxAdapter(
-            child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 20),
-                child: GroupList()))
-      ],
-      //...group.courses.map((e) => Text(e.courseName)).toList()
-    ));
+    return HeroScaffold(
+        title: "HsHH",
+        leadingIcon: LeadingIcon(
+            icon: Icons.settings, onTap: (c) => pushPage(c, const SettingsPage())),
+        actions: [
+          IconButton.integrated(
+              icon: Icons.heart,
+              onTap: () => pushPage(context, const FavoritePage())),
+          IconButton.integrated(
+            icon: Icons.users2,
+            onTap: () => pushPage(context, const ProfileListPage()),
+          )
+        ],
+        hero: Card(
+          border: Border.noneRect,
+          padding: null,
+          scheme: ColorSchemes.inverse,
+          color: Colors.transparent,
+          child: Stack(fit: StackFit.expand, children: [
+            Image.asset("assets/img/biking.webp",
+                fit: BoxFit.cover,
+                alignment: Alignment.centerRight,
+                errorBuilder: (_, __, ___) => Spaced.zero),
+            const Center(
+                child: Text(
+              "HsHH",
+              color: Colors.white,
+              resolvedStyle: TypeStyle(fontFamily: titleFont, fontSize: 105),
+            ))
+          ]),
+        ),
+        body: Padded.symmetric(
+            horizontal: 1,
+            child: Column(
+                children: [
+              const GroupFilterView(),
+              const SingleChildScrollView(child: GroupList())
+            ].spaced(amount: 2)))
+
+        //...group.courses.map((e) => Text(e.courseName)).toList()
+        );
   }
 }

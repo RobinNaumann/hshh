@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import '../../../../elbe.dart';
 import '../../util/inherited_theme.dart';
 
@@ -7,12 +9,23 @@ class ColorThemeData extends ElbeInheritedThemeData {
   final ColorThemeMode mode;
   final ColorSchemes scheme;
   final ColorStyles? style;
-  final StateColors? state;
+  final ColorStates? state;
 
   final ColorScheme light;
   final ColorScheme dark;
 
-  ColorStyle get activeScheme => map(mode).get(scheme);
+  LayerColor resolve(
+          {ColorThemeMode? mode,
+          ColorSchemes? scheme,
+          ColorStyles? style,
+          ColorStates? state}) =>
+      map(mode ?? this.mode)
+          .get(scheme ?? this.scheme)
+          .get(style ?? this.style ?? ColorStyles.plain)
+          .get(state ?? this.state ?? ColorStates.neutral);
+
+  ColorScheme get activeMode => map(mode);
+  ColorStyle get activeScheme => activeMode.get(scheme);
   StateColor get activeStyle =>
       style != null ? activeScheme.get(style!) : activeScheme.plain;
   LayerColor get activeLayer =>
@@ -30,7 +43,7 @@ class ColorThemeData extends ElbeInheritedThemeData {
     ColorThemeMode? mode,
     ColorSchemes? scheme,
     ColorStyles? style,
-    StateColors? state,
+    ColorStates? state,
     ColorScheme? light,
     ColorScheme? dark,
   }) =>
@@ -43,15 +56,17 @@ class ColorThemeData extends ElbeInheritedThemeData {
           state: state ?? this.state);
 
   factory ColorThemeData.fromColor(
-          {required Color accent,
-          ColorThemeMode mode = ColorThemeMode.light,
-          ColorSchemes scheme = ColorSchemes.primary}) =>
-      ColorThemeData(
-          light:
-              ColorScheme.fromColor(accent: accent, background: Colors.white),
-          dark: ColorScheme.fromColor(accent: accent, background: Colors.black),
-          mode: mode,
-          scheme: scheme);
+      {required Color accent,
+      ColorThemeMode? mode,
+      ColorSchemes scheme = ColorSchemes.primary}) {
+    final bright =
+        PlatformDispatcher.instance.platformBrightness == Brightness.light;
+    return ColorThemeData(
+        light: ColorScheme.fromColor(accent: accent, background: Colors.white),
+        dark: ColorScheme.fromColor(accent: accent, background: Colors.black),
+        mode: mode ?? (bright ? ColorThemeMode.light : ColorThemeMode.dark),
+        scheme: scheme);
+  }
 
   ColorScheme map(ColorThemeMode mode) => [light, dark][mode.index];
 
