@@ -2,6 +2,7 @@ import 'package:flutter_html/flutter_html.dart';
 import 'package:hshh/cubits/c_booking_confirm.dart';
 import 'package:hshh/services/s_booking.dart';
 import 'package:hshh/util/elbe_ui/elbe.dart';
+import 'package:hshh/util/tri/tri_cubit.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 class BookingConfirmPage extends StatelessWidget {
@@ -25,7 +26,7 @@ class BookingConfirmPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BookingConfCubit.provider(
+    return TriProvider(
         cubit: (_) => BookingConfCubit(data),
         child: BookingConfCubit.builder(
             onData: (cubit, conf) => _WebView(page: conf.doc)));

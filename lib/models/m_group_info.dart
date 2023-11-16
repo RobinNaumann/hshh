@@ -1,7 +1,9 @@
 import 'package:collection/collection.dart';
+import 'package:hshh/models/m_data.dart';
 import 'package:hshh/services/s_group_info.dart';
+import 'package:hshh/util/json_tools.dart';
 
-class CourseInfo {
+class CourseInfo extends DataModel {
   final String id;
   final String groupId;
   final String bookingId;
@@ -10,9 +12,12 @@ class CourseInfo {
 
   const CourseInfo(
       {required this.id, required this.groupId, required this.bookingId});
+
+  @override
+  get fields => {"id": id, "groupId": groupId, "bookingId": bookingId};
 }
 
-class GroupInfo {
+class GroupInfo extends DataModel {
   final String groupId;
   final String description;
   final Uri? imageURL;
@@ -32,11 +37,6 @@ class GroupInfo {
   CourseInfo? course(String id) => courses?.firstWhereOrNull((e) => e.id == id);
 
   @override
-  int get hashCode => [groupId, description, imageURL, bsCode, courses]
-      .map((e) => e.hashCode)
-      .join()
-      .hashCode;
-
-  @override
-  bool operator ==(Object other) => hashCode == other.hashCode;
+  get fields =>
+      {"groupId": groupId, "description": description, "imageURL": imageURL};
 }

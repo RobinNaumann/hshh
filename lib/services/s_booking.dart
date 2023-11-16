@@ -70,7 +70,7 @@ class BookingService {
     return BookingData(
         offer: _getOffer(html),
         offerHtml: html.getElementById("bs_ag")!,
-        fields: _getFields(html),
+        inputFields: _getFields(html),
         institutions: Institution.list);
   }
 

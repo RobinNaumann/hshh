@@ -1,4 +1,6 @@
-class CoursesInfo {
+import 'package:hshh/models/m_data.dart';
+
+class CoursesInfo extends DataModel {
   final Map<int, EventLocation> locations;
   final Map<int, String> categories;
   final List<CourseGroup> groups;
@@ -9,10 +11,8 @@ class CoursesInfo {
       required this.groups});
 
   @override
-  String toString() => "EventLocation{"
-      "locations: $locations, "
-      "categories: $categories, "
-      "groups: $groups}";
+  get fields =>
+      {"locations": locations, "categories": categories, "groups": groups};
 }
 
 class EventLocation {
@@ -30,7 +30,7 @@ class EventLocation {
       "long: $long}";
 }
 
-class CourseEvent {
+class CourseEvent extends DataModel {
   final int weekday;
   final int locationId;
   final String timespan;
@@ -49,16 +49,17 @@ class CourseEvent {
       bookingId: bookingId);
 
   @override
-  String toString() => "CourseEvent{"
-      "weekday: $weekday, "
-      "locationId: $locationId, "
-      "timespan: $timespan, "
-      "bookingId: $bookingId}";
+  get fields => {
+        "weekday": weekday,
+        "locationId": locationId,
+        "timespan": timespan,
+        "bookingId": bookingId
+      };
 }
 
 enum CourseType { info, course, courseFlexicard, courseSwimcard }
 
-class CourseGroup {
+class CourseGroup extends DataModel {
   final String name;
   final List<Course> allCourses;
 
@@ -72,9 +73,12 @@ class CourseGroup {
 
   bool get swimcard =>
       allCourses.indexWhere((c) => c.type == CourseType.courseSwimcard) >= 0;
+
+  @override
+  get fields => {"name": name, "allCourses": allCourses};
 }
 
-class Course {
+class Course extends DataModel {
   final String id;
   final String groupName;
   final String courseName;
@@ -104,21 +108,16 @@ class Course {
       required this.type});
 
   @override
-  String toString() => "Course{"
-      "id: $id, "
-      "groupName: $groupName, "
-      "courseName: $courseName, "
-      "events: $events, "
-      "timespan: $timespan, "
-      "organizers: $organizers, "
-      "cost: $cost, "
-      "spacesAvailable: $spacesAvailable, "
-      "categoryId: $categoryId, "
-      "type: $type}";
-
-  @override
-  int get hashCode => toString().hashCode;
-
-  @override
-  bool operator ==(Object other) => hashCode == other.hashCode;
+  get fields => {
+        "id": id,
+        "groupName": groupName,
+        "courseName": courseName,
+        "events": events,
+        "timespan": timespan,
+        "organizers": organizers,
+        "cost": cost,
+        "spacesAvailable": spacesAvailable,
+        "categoryId": categoryId,
+        "type": type
+      };
 }

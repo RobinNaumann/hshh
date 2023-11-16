@@ -5,6 +5,7 @@ import 'package:hshh/services/s_booking.dart';
 import 'package:hshh/util/elbe_ui/elbe.dart';
 import 'package:hshh/util/extensions/maybe_map.dart';
 import 'package:hshh/util/tools.dart';
+import 'package:hshh/util/tri/tri_cubit.dart';
 import 'package:hshh/widgets/booking_page/p_booking_confirm.dart';
 import 'package:hshh/widgets/booking_page/v_booking_offer.dart';
 import 'package:hshh/widgets/profiles/profile_list/v_profile_list.dart';
@@ -28,7 +29,7 @@ class BookingDataPage extends StatelessWidget {
       child: child);
 
   @override
-  Widget build(context) => BookingDataCubit.provider(
+  Widget build(context) => TriProvider(
       cubit: (_) => BookingDataCubit(dateId, sessionId),
       child: const _BookingDataPage());
 }

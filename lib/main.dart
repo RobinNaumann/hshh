@@ -6,6 +6,7 @@ import 'package:hshh/cubits/c_favorites.dart';
 import 'package:hshh/cubits/c_filter.dart';
 import 'package:hshh/cubits/c_profiles.dart';
 import 'package:flutter/material.dart' as m;
+import 'package:hshh/util/tri/tribit/tribit_demo.dart';
 
 import 'util/elbe_ui/elbe.dart';
 import 'widgets/home/p_home.dart';
@@ -44,22 +45,22 @@ class _App extends StatelessWidget {
   Widget build(BuildContext context) {
     final cTheme = ColorTheme.of(context);
     return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      theme: m.ThemeData.from(
-          useMaterial3: true,
-          colorScheme: m.ColorScheme.fromSeed(
-              seedColor: cTheme.activeScheme.majorAccent.neutral,
-              brightness: cTheme.mode == ColorThemeMode.light
-                  ? Brightness.light
-                  : Brightness.dark)),
-      title: 'HsHH',
-      localizationsDelegates: const [
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-      ],
-      supportedLocales: const [Locale('en', 'US'), Locale('de', 'DE')],
-      home: const HomePage(),
-    );
+        debugShowCheckedModeBanner: false,
+        theme: m.ThemeData.from(
+            useMaterial3: true,
+            colorScheme: m.ColorScheme.fromSeed(
+                seedColor: cTheme.activeScheme.majorAccent.neutral,
+                brightness: cTheme.mode == ColorThemeMode.light
+                    ? Brightness.light
+                    : Brightness.dark)),
+        title: 'HsHH',
+        localizationsDelegates: const [
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: const [Locale('en', 'US'), Locale('de', 'DE')],
+        home: TribitDemo() //const HomePage(),
+        );
   }
 }

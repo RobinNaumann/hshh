@@ -20,6 +20,12 @@ class __ProviderState<C extends TriCubit> extends State<TriProvider<C>> {
   late final cubit = widget.cubit(context);
 
   @override
+  void initState() {
+    print("initiating tribit state");
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) =>
       BlocProvider<C>(create: (_) => cubit, child: widget.child);
 }

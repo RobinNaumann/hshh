@@ -1,4 +1,3 @@
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hshh/cubits/c_event_times.dart';
 import 'package:hshh/models/m_group_info.dart';
 import 'package:hshh/services/s_group_info.dart';
@@ -13,8 +12,7 @@ import '../../../util/elbe_ui/elbe.dart';
 class EventTimesView extends StatelessWidget {
   final bool isFree;
   final String courseId;
-  const EventTimesView(
-      {super.key, required this.courseId, required this.isFree});
+  EventTimesView({super.key, required this.courseId, required this.isFree});
 
   @override
   Widget build(BuildContext context) {
@@ -26,9 +24,11 @@ class EventTimesView extends StatelessWidget {
           if (!isFree) return _NoTimesWidget.cost(data.webLink);
           final c = data.course(courseId);
 
+          print("DATA ${c?.bookingId}");
+
           return c == null
               ? _NoTimesWidget.notFound(data.webLink)
-              : _EventTimesView(c: c, bsCode: "");
+              : _EventTimesView(key: Key("super"), c: c, bsCode: "");
         });
   }
 }
@@ -38,12 +38,14 @@ class _EventTimesView extends StatelessWidget {
   final String bsCode;
   const _EventTimesView({super.key, required this.c, required this.bsCode});
 
+  EventTimesCubit _make(BuildContext _) => EventTimesCubit(
+      groupId: c.groupId, bookingId: c.bookingId, bsCode: bsCode);
+
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<EventTimesCubit>(
-        key: const Key("KONST"),
-        create: (_) => EventTimesCubit(
-            groupId: c.groupId, bookingId: c.bookingId, bsCode: bsCode),
+    return TriProvider(
+        key: const Key("super"),
+        cubit: _make,
         child: EventTimesCubit.builder(
             onLoading: loadingView,
             onError: errorView,

@@ -1,3 +1,5 @@
+import 'package:hshh/models/m_data.dart';
+
 enum EventTimeState {
   bookable,
   closed,
@@ -8,7 +10,7 @@ enum EventTimeState {
   bool get isWaitinglist => this == EventTimeState.waitinglist;
 }
 
-class EventTime {
+class EventTime extends DataModel {
   final DateTime start;
   final DateTime end;
   final EventTimeState state;
@@ -19,4 +21,8 @@ class EventTime {
       required this.end,
       required this.state,
       this.bookingId});
+
+  @override
+  get fields =>
+      {"start": start, "end": end, "state": state, "bookingId": bookingId};
 }
