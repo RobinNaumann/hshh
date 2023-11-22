@@ -1,7 +1,5 @@
-import 'package:hshh/util/tri/tribit/tribit.dart';
 
-import '../../elbe_ui/elbe.dart';
-
+/*
 typedef CounterTriProvider = TriProvider<int, CounterTribit>;
 typedef CounterTriBuilder = TriBuilder<int, CounterTribit>;
 
@@ -60,3 +58,4 @@ class TribitDemo extends StatelessWidget {
                 ))));
   }
 }
+*/

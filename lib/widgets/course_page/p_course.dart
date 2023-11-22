@@ -1,7 +1,7 @@
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:hshh/cubits/c_group_info.dart';
+import 'package:hshh/bits/c_group_info.dart';
 import 'package:hshh/models/m_course.dart';
 import 'package:hshh/util/extensions/maybe_map.dart';
+import 'package:hshh/util/tri/tribit/tribit.dart';
 import 'package:hshh/widgets/course_page/v_event.dart';
 import 'package:hshh/widgets/group_page/course_list/v_course_snippet.dart';
 
@@ -11,19 +11,14 @@ import 'event_times_view/v_event_times.dart';
 
 class CoursePage extends StatelessWidget {
   final Course course;
-  final GroupInfoCubit? cubit;
+  final GroupInfoBit? bit;
 
-  const CoursePage({super.key, re, required this.cubit, required this.course});
-
-  Widget _child() {
-    print("BUILD _CHILD");
-    return EventTimesView(courseId: course.id, isFree: course.cost.isEmpty);
-  }
+  const CoursePage({super.key, re, required this.bit, required this.course});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      heroTag: "course_${course.id}",
+      //heroTag: "course_${course.id}",
       leadingIcon: const LeadingIcon.close(),
       actions: [CourseFavButton(courseId: course.id)],
       title: course.groupName,
@@ -46,13 +41,11 @@ class CoursePage extends StatelessWidget {
                             ))
                         .spaced())),
             const Title.h5("Nächste Termine"),
-            cubit != null
-                ? BlocProvider<GroupInfoCubit>.value(
-                    value: cubit!, child: _child())
-                : BlocProvider(
-                    create: (_) => GroupInfoCubit(course.groupName),
-                    child: _child(),
-                  )
+            TriProvider.adaptive(
+                value: bit,
+                create: (_) => GroupInfoBit(course.groupName),
+                child:
+                    EventTimesView(course: course, isFree: course.cost.isEmpty))
           ].spaced(),
         ),
       ),

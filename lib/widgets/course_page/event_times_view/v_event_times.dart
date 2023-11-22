@@ -1,60 +1,69 @@
-import 'package:hshh/cubits/c_event_times.dart';
+import 'package:hshh/bits/c_event_times.dart';
+import 'package:hshh/models/m_course.dart';
 import 'package:hshh/models/m_group_info.dart';
 import 'package:hshh/services/s_group_info.dart';
 import 'package:hshh/util/extensions/maybe_map.dart';
-import 'package:hshh/util/tri/tri_cubit.dart';
+import 'package:hshh/util/tri/tribit/tribit.dart';
 import 'package:hshh/widgets/course_page/event_times_view/v_event_time_snippet.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../../../cubits/c_group_info.dart';
+import '../../../bits/c_group_info.dart';
 import '../../../util/elbe_ui/elbe.dart';
 
 class EventTimesView extends StatelessWidget {
   final bool isFree;
-  final String courseId;
-  EventTimesView({super.key, required this.courseId, required this.isFree});
+  final Course course;
+  const EventTimesView({super.key, required this.course, required this.isFree});
 
   @override
   Widget build(BuildContext context) {
-    print("BUILD TIMESVIEW");
-    return GroupInfoCubit.builder(
-        key: Key("SUPER"),
+    return GroupInfoBit.builder(
         onLoading: (_) => const Spaced(),
         onData: (cubit, data) {
           if (!isFree) return _NoTimesWidget.cost(data.webLink);
-          final c = data.course(courseId);
-
-          print("DATA ${c?.bookingId}");
+          final c = data.course(course.id);
 
           return c == null
               ? _NoTimesWidget.notFound(data.webLink)
-              : _EventTimesView(key: Key("super"), c: c, bsCode: "");
+              : _EventTimesView(
+                  key: Key(c.bookingId),
+                  course: course,
+                  info: c,
+                  groupInfo: data);
         });
   }
 }
 
 class _EventTimesView extends StatelessWidget {
-  final CourseInfo c;
-  final String bsCode;
-  const _EventTimesView({super.key, required this.c, required this.bsCode});
+  final GroupInfo groupInfo;
+  final Course course;
+  final CourseInfo info;
+  const _EventTimesView(
+      {super.key,
+      required this.course,
+      required this.info,
+      required this.groupInfo});
 
-  EventTimesCubit _make(BuildContext _) => EventTimesCubit(
-      groupId: c.groupId, bookingId: c.bookingId, bsCode: bsCode);
+  EventTimesBit _make(BuildContext _) => EventTimesBit(
+      groupId: groupInfo.webLink.toString(),
+      bookingId: info.bookingId,
+      bsCode: groupInfo.bsCode);
 
   @override
   Widget build(BuildContext context) {
     return TriProvider(
-        key: const Key("super"),
-        cubit: _make,
-        child: EventTimesCubit.builder(
-            onLoading: loadingView,
-            onError: errorView,
+        key: const Key("FIXED"),
+        create: _make,
+        child: EventTimesBit.builder(
+            onLoading: triLoadingView,
+            onError: triErrorView,
             onData: (_, data) => data.times.isEmpty
                 ? _NoTimesWidget.notFound(
-                    GroupInfoService.getCourseLink(c.groupId))
+                    GroupInfoService.getCourseLink(info.groupId))
                 : Column(
                     children: data.times
-                        .listMap((e) => EventTimeSnippet(eventTime: e))
+                        .listMap((e) =>
+                            EventTimeSnippet(course: course, eventTime: e))
                         .spaced(),
                   )));
   }

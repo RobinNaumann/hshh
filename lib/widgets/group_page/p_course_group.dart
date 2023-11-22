@@ -1,12 +1,12 @@
-import 'package:hshh/cubits/c_group_info.dart';
+import 'package:hshh/bits/c_group_info.dart';
 import 'package:hshh/models/m_course.dart';
-import 'package:hshh/util/tri/tri_cubit.dart';
 import 'package:hshh/widgets/group_page/course_list/v_course_list.dart';
 import 'package:hshh/widgets/group_page/v_group_description.dart';
 import 'package:transparent_image/transparent_image.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../util/elbe_ui/elbe.dart';
+import '../../util/tri/tribit/tribit.dart';
 
 class CourseGroupPage extends StatelessWidget {
   final CourseGroup group;
@@ -20,24 +20,26 @@ class CourseGroupPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TriProvider(
-      cubit: (_) => GroupInfoCubit(group.name),
+      create: (_) => GroupInfoBit(group.name),
       child: HeroScaffold(
           leadingIcon: const LeadingIcon.back(),
           title: group.name,
-          hero: GroupInfoCubit.builder(
+          hero: GroupInfoBit.builder(
             onLoading: (_) => const SizedBox.shrink(),
-            onError: errorView,
-            onData: (_, groupInfo) => FadeInImage.memoryNetwork(
-              key: Key(DateTime.now().millisecondsSinceEpoch.toString()),
-              placeholder: kTransparentImage,
-              imageErrorBuilder: (_, __, ___) => const Spaced(),
-              fadeInDuration: const Duration(milliseconds: 200),
-              image: groupInfo.imageURL.toString(),
-              fit: BoxFit.cover,
-            ),
+            onError: triErrorView,
+            onData: (_, groupInfo) => groupInfo.imageURL == null
+                ? Spaced.zero
+                : FadeInImage.memoryNetwork(
+                    key: Key(DateTime.now().millisecondsSinceEpoch.toString()),
+                    placeholder: kTransparentImage,
+                    imageErrorBuilder: (_, __, ___) => const Spaced(),
+                    fadeInDuration: const Duration(milliseconds: 200),
+                    image: groupInfo.imageURL.toString(),
+                    fit: BoxFit.cover,
+                  ),
           ),
           actions: [
-            GroupInfoCubit.builder(
+            GroupInfoBit.builder(
                 onLoading: (_) => _webLink(null),
                 onError: (_, __) => _webLink(null),
                 onData: (_, d) => _webLink(d.webLink))
@@ -50,7 +52,7 @@ class CourseGroupPage extends StatelessWidget {
                 Text.h3(group.name),
                 const GroupDescriptionView(),
                 const SizedBox(height: 20),
-                GroupInfoCubit.builder(
+                GroupInfoBit.builder(
                     small: true,
                     onData: (c, groupInfo) => CourseList(
                         courses: group.courses, groupInfo: groupInfo))

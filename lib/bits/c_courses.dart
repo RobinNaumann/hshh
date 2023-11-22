@@ -2,13 +2,12 @@ import 'package:hshh/models/m_course.dart';
 import 'package:hshh/services/s_courses.dart';
 import 'package:hshh/util/extensions/maybe_map.dart';
 
-import '../util/tri/tri_cubit.dart';
+import '../util/tri/tribit/tribit.dart';
 
-class CoursesCubit extends TriCubit<CoursesInfo> {
-  static const provider = TriCubit.provider<CoursesCubit>;
-  static const builder = TriCubit.builder<CoursesCubit, CoursesInfo>;
+class CoursesBit extends TriBit<CoursesInfo> {
+  static const builder = TriBuilder<CoursesInfo, CoursesBit>.make;
 
-  CoursesCubit() : super(() => CoursesService.getCoursesInfo());
+  CoursesBit() : super(() => CoursesService.getCoursesInfo());
 
   String? getCategory(int index) =>
       state.whenOrNull<String?>(onData: (d) => d.categories.maybe(index));

@@ -12,9 +12,22 @@ class TriBuilder<T, B extends TriBit<T>> extends StatelessWidget {
       required this.onData,
       this.small = false});
 
+  factory TriBuilder.make(
+          {Key? key,
+          Widget Function(B tribit)? onLoading,
+          Widget Function(B tribit, dynamic error)? onError,
+          required Widget Function(B tribit, T data) onData,
+          bool small = false}) =>
+      TriBuilder(
+          key: key,
+          onLoading: onLoading,
+          onError: onError,
+          onData: onData,
+          small: small);
+
   @override
   Widget build(BuildContext context) {
-    final bit = TriBit.of<T, B>(context);
+    final bit = TriBit.of<B>(context);
 
     return StreamBuilder<TriState<T>>(
         initialData: bit.state,
@@ -36,7 +49,7 @@ class TriBuilder<T, B extends TriBit<T>> extends StatelessWidget {
 Widget triEmptyView() => const SizedBox.shrink();
 
 Widget triErrorView(TriBit bit, dynamic error) =>
-    Center(child: TriErrorView(tribit: bit, error: error));
+    Center(child: TriErrorView(bit: bit, error: error));
 
 Widget triLoadingView(TriBit bit) => const Center(
     child: Padding(

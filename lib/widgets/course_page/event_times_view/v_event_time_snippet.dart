@@ -1,17 +1,20 @@
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:hshh/cubits/c_event_times.dart';
+import 'package:hshh/bits/c_event_times.dart';
 import 'package:hshh/models/m_event_time.dart';
 import 'package:hshh/util/extensions/maybe_map.dart';
 import 'package:hshh/util/tools.dart';
+import 'package:hshh/util/tri/tribit/tribit.dart';
 import 'package:hshh/widgets/booking_page/p_booking_data.dart';
 import 'package:intl/intl.dart';
 
+import '../../../models/m_course.dart';
 import '../../../util/elbe_ui/elbe.dart';
 
 class EventTimeSnippet extends StatelessWidget {
+  final Course course;
   final EventTime eventTime;
 
-  const EventTimeSnippet({super.key, required this.eventTime});
+  const EventTimeSnippet(
+      {super.key, required this.eventTime, required this.course});
 
   String _dayHint(DateTime e) {
     final n = DateTime.now();
@@ -40,7 +43,9 @@ class EventTimeSnippet extends StatelessWidget {
                 context,
                 BookingDataPage(
                     dateId: eventTime.bookingId!,
-                    sessionId: context.read<EventTimesCubit>().sessionId))
+                    sessionId: context.bit<EventTimesBit>().sessionId,
+                    course: course,
+                    time: eventTime))
             : null,
         child: Row(
           children: [

@@ -1,5 +1,5 @@
-import 'package:hshh/cubits/c_courses.dart';
-import 'package:hshh/cubits/c_filter.dart';
+import 'package:hshh/bits/c_courses.dart';
+import 'package:hshh/bits/c_filter.dart';
 import 'package:hshh/util/extensions/maybe_map.dart';
 
 import '../../util/elbe_ui/elbe.dart';
@@ -9,9 +9,9 @@ class FilterCategoriesView extends ThemedWidget {
 
   @override
   Widget make(context, theme) {
-    return CoursesCubit.builder(
+    return CoursesBit.builder(
         small: true,
-        onData: (cubit, groupInfo) => FilterCubit.builder(
+        onData: (cubit, groupInfo) => FilterBit.builder(
               onData: (cubit, filter) => Wrap(
                   spacing: theme.rem(1) ?? 0,
                   runSpacing: theme.rem(1) ?? 0,

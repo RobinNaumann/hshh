@@ -1,5 +1,5 @@
-import 'package:hshh/cubits/c_courses.dart';
-import 'package:hshh/cubits/c_filter.dart';
+import 'package:hshh/bits/c_courses.dart';
+import 'package:hshh/bits/c_filter.dart';
 
 import '../../util/elbe_ui/elbe.dart';
 
@@ -8,14 +8,14 @@ class FilterMiscView extends ThemedWidget {
 
   @override
   Widget make(context, theme) {
-    return FilterCubit.builder(
+    return FilterBit.builder(
         onData: (cubit, filter) => Column(
               children: [
                 ToggleButton(
                     value: filter.onlyToday,
                     item: ToggleItem(
                         label:
-                            "nur Heute (${CoursesCubit.getWeekday(DateTime.now().weekday - 1, withS: true)})"),
+                            "nur Heute (${CoursesBit.getWeekday(DateTime.now().weekday - 1, withS: true)})"),
                     onChanged: cubit.withOnlyToday),
                 ToggleButton(
                     value: filter.onlyBookable,

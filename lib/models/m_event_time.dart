@@ -23,6 +23,6 @@ class EventTime extends DataModel {
       this.bookingId});
 
   @override
-  get fields =>
+  get map =>
       {"start": start, "end": end, "state": state, "bookingId": bookingId};
 }

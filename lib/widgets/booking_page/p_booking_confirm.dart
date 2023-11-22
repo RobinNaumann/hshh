@@ -1,9 +1,16 @@
 import 'package:flutter_html/flutter_html.dart';
-import 'package:hshh/cubits/c_booking_confirm.dart';
+import 'package:hshh/bits/c_booking_confirm.dart';
+import 'package:hshh/models/m_event_time.dart';
 import 'package:hshh/services/s_booking.dart';
 import 'package:hshh/util/elbe_ui/elbe.dart';
-import 'package:hshh/util/tri/tri_cubit.dart';
+import 'package:hshh/util/tools.dart';
+import 'package:hshh/util/tri/tribit/tribit.dart';
+import 'package:hshh/widgets/booking_page/p_booking_result.dart';
 import 'package:webview_flutter/webview_flutter.dart';
+
+import '../../models/m_course.dart';
+import '../../services/s_storage.dart';
+import 'p_booking_data.dart';
 
 class BookingConfirmPage extends StatelessWidget {
   static const _lawText =
@@ -27,66 +34,51 @@ class BookingConfirmPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TriProvider(
-        cubit: (_) => BookingConfCubit(data),
-        child: BookingConfCubit.builder(
-            onData: (cubit, conf) => _WebView(page: conf.doc)));
-
-    /* Scaffold(
-        leadingIcon: const LeadingIcon.back(),
-        title: "überprüfen",
-        body: BookingConfCubit.builder(onData: (cubit, conf) {
-          return Column(
-            children: [
-              Expanded(
-                  child: Padded.all(
-                child: ListView(
-                  clipBehavior: Clip.none,
-                  children: [
-                    Card(
-                      color: Colors.white,
-                      child: Html.fromElement(
-                          documentElement: conf.offer, style: style),
-                    ),
-                    Card(
+        create: (_) => BookingConfBit(data: data),
+        child: Scaffold(
+          leadingIcon: const LeadingIcon.back(),
+          title: "überprüfen",
+          body: BookingConfBit.builder(onData: (cubit, conf) {
+            return Column(
+              children: [
+                Expanded(
+                    child: Padded.all(
+                  child: ListView(
+                    clipBehavior: Clip.none,
+                    children: [
+                      Card(
                         color: Colors.white,
                         child: Html.fromElement(
-                            documentElement: conf.profile,
-                            style: {
-                              ...style,
-                              ".bs_form_row": Style(display: Display.none),
-                              '.bs_form_row[class*=" "]': Style(
-                                  display: Display.inline,
-                                  padding: HtmlPaddings.only(bottom: 10))
-                            })),
-                    const Text(_lawText)
-                  ].spaced(),
-                ),
-              )),
-              BookingDataPage.actionBase(
-                  child: Button.major(
-                      icon: Icons.check,
-                      label: "verbindlich buchen",
-                      onTap: () {
-                        BookingService.book(data, conf.formdata);
-                      }))
-            ],
-          );
-        }),
-      ),
-    );*/
-  }
-}
-
-class _WebView extends StatelessWidget {
-  final WebViewController ctrl = WebViewController();
-  _WebView({required String page}) {
-    //ctrl.loadRequest(Uri.https("bing.com"));
-    ctrl.loadHtmlString(page,
-        baseUrl: "https://buchung.hochschulsport-hamburg.de/");
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(title: "HTML", body: WebViewWidget(controller: ctrl));
+                            documentElement: conf.offer, style: style),
+                      ),
+                      Card(
+                          color: Colors.white,
+                          child: Html.fromElement(
+                              documentElement: conf.profile,
+                              style: {
+                                ...style,
+                                ".bs_form_row": Style(display: Display.none),
+                                '.bs_form_row[class*=" "]': Style(
+                                    display: Display.inline,
+                                    padding: HtmlPaddings.only(bottom: 10))
+                              })),
+                      const Text(_lawText)
+                    ].spaced(),
+                  ),
+                )),
+                BookingDataPage.actionBase(
+                    child: Button.major(
+                        icon: Icons.check,
+                        label: "verbindlich buchen",
+                        onTap: () {
+                          pushPage(
+                              context,
+                              BookingResultPage(
+                                  confirmation: conf, data: data));
+                        }))
+              ],
+            );
+          }),
+        ));
   }
 }

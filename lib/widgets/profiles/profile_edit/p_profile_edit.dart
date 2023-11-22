@@ -1,7 +1,7 @@
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:hshh/cubits/c_profiles.dart';
+import 'package:hshh/bits/c_profiles.dart';
 import 'package:hshh/util/elbe_ui/elbe.dart';
 import 'package:hshh/util/tools.dart';
+import 'package:hshh/util/tri/tribit/tribit.dart';
 import 'package:hshh/widgets/profiles/profile_edit/v_p_fields.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 
@@ -63,7 +63,7 @@ class _PersonEditPageState extends State<ProfileEditPage> {
   late final Profile pData = {...?widget.profile};
 
   void delete() {
-    context.read<ProfilesCubit>().delete(widget.profileKey!);
+    context.bit<ProfilesBit>().delete(widget.profileKey!);
     popPage(context);
   }
 
@@ -77,7 +77,7 @@ class _PersonEditPageState extends State<ProfileEditPage> {
       return;
     }
 
-    context.read<ProfilesCubit>().set(widget.profileKey, pData);
+    context.bit<ProfilesBit>().set(widget.profileKey, pData);
     popPage(context);
   }
 

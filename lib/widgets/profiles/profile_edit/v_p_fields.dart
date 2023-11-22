@@ -3,7 +3,7 @@ import 'package:hshh/util/extensions/maybe_map.dart';
 import 'package:hshh/util/extensions/widget_list.dart';
 import 'package:hshh/util/json_tools.dart';
 
-import '../../../cubits/c_profiles.dart';
+import '../../../bits/c_profiles.dart';
 import '../../util/t_field.dart';
 
 class PField {

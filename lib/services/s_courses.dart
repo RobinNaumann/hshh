@@ -9,9 +9,10 @@ import 'package:html_character_entities/html_character_entities.dart';
 
 class CoursesService {
   static Future<CoursesInfo> getCoursesInfo() async {
-    final data = _sanitizeJson(await apiGet(
-        uri: Uri.https("buchung.hochschulsport-hamburg.de",
-            "/angebote/aktueller_zeitraum/kurssuche.js")));
+    final data = _sanitizeJson((await apiGet(
+            uri: Uri.https("buchung.hochschulsport-hamburg.de",
+                "/angebote/aktueller_zeitraum/kurssuche.js")))
+        .body);
 
     return CoursesInfo(
         categories: _parseCategories(data["bereiche"]),

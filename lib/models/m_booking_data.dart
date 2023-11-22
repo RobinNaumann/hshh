@@ -1,6 +1,5 @@
 import 'package:hshh/models/m_data.dart';
 import 'package:hshh/services/d_institutions.dart';
-import 'package:hshh/util/json_tools.dart';
 import 'package:html/dom.dart';
 
 class BookingData extends DataModel {
@@ -16,7 +15,7 @@ class BookingData extends DataModel {
       required this.institutions});
 
   @override
-  get fields => {
+  get map => {
         "offer": offer,
         "offerHtml": offerHtml,
         "inputFields": inputFields,
@@ -32,5 +31,5 @@ class InputField extends DataModel {
   const InputField({required this.id, required this.label, this.type});
 
   @override
-  get fields => {"id": id, "label": label, "type": type};
+  get map => {"id": id, "label": label, "type": type};
 }

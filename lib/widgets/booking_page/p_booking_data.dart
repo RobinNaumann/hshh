@@ -1,24 +1,30 @@
-import 'package:flutter/gestures.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:hshh/cubits/c_booking_data.dart';
+import 'package:hshh/bits/c_booking_data.dart';
+import 'package:hshh/models/m_event_time.dart';
 import 'package:hshh/services/s_booking.dart';
 import 'package:hshh/util/elbe_ui/elbe.dart';
 import 'package:hshh/util/extensions/maybe_map.dart';
 import 'package:hshh/util/tools.dart';
-import 'package:hshh/util/tri/tri_cubit.dart';
+import 'package:hshh/util/tri/tribit/tribit.dart';
 import 'package:hshh/widgets/booking_page/p_booking_confirm.dart';
 import 'package:hshh/widgets/booking_page/v_booking_offer.dart';
 import 'package:hshh/widgets/profiles/profile_list/v_profile_list.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
-import '../../cubits/c_profiles.dart';
+import '../../bits/c_profiles.dart';
+import '../../models/m_course.dart';
 
 class BookingDataPage extends StatelessWidget {
   final String sessionId;
   final String dateId;
+  final Course course;
+  final EventTime time;
 
   const BookingDataPage(
-      {super.key, required this.dateId, required this.sessionId});
+      {super.key,
+      required this.dateId,
+      required this.sessionId,
+      required this.course,
+      required this.time});
 
   static Widget actionBase({required Widget child}) => Card(
       padding: const RemInsets.fromLTRB(1, 1.5, 1, 1),
@@ -30,7 +36,7 @@ class BookingDataPage extends StatelessWidget {
 
   @override
   Widget build(context) => TriProvider(
-      cubit: (_) => BookingDataCubit(dateId, sessionId),
+      create: (_) => BookingDataBit(dateId, sessionId, course, time),
       child: const _BookingDataPage());
 }
 
@@ -52,7 +58,7 @@ class _BookingDataPageState extends State<_BookingDataPage> {
 
   bool isValid() => termsAccepted && profileId != null;
 
-  void _book(Map<int, Profile> profiles, BookingDataCubit c) async {
+  void _book(Map<int, Profile> profiles, BookingDataBit c) async {
     final p = profiles.maybe(profileId!);
     if (p == null) {
       showSnackbar(context, "Dieses Profil ist nicht gültig.");
@@ -63,7 +69,11 @@ class _BookingDataPageState extends State<_BookingDataPage> {
         context,
         BookingConfirmPage(
             data: BookingReqData(
-                sessionId: c.sessionId, dateId: c.dateId, profile: p)));
+                sessionId: c.sessionId,
+                dateId: c.dateId,
+                profile: p,
+                course: c.course,
+                time: c.time)));
   }
 
   @override
@@ -90,7 +100,7 @@ class _BookingDataPageState extends State<_BookingDataPage> {
                         //const BookingFormView()
                       ].spaced())),
             ),
-            ProfilesCubit.builder(
+            ProfilesBit.builder(
               onLoading: (_) => Spaced.zero,
               onData: (cubit, profiles) {
                 return BookingDataPage.actionBase(
@@ -101,8 +111,8 @@ class _BookingDataPageState extends State<_BookingDataPage> {
                         onChanged: (v) => setState(() => termsAccepted = v)),
                     Button.major(
                         onTap: isValid()
-                            ? () => _book(
-                                profiles, context.read<BookingDataCubit>())
+                            ? () =>
+                                _book(profiles, context.bit<BookingDataBit>())
                             : null,
                         icon: Icons.arrowRight,
                         label: "prüfen"),
@@ -144,8 +154,8 @@ class _TermsCheckbox extends StatelessWidget {
               text:
                   'Allgemeinen Geschäftsbedingungen (AGB) des Hochschulsports Hamburg.',
               style: TextStyle(color: accent),
-              recognizer: TapGestureRecognizer()
-                ..onTap = () {
+              recognizer: TapAndPanGestureRecognizer()
+                ..onTapUp = (_) {
                   launchUrlString(
                       'https://www.hochschulsport.uni-hamburg.de/informationen/agb.html');
                 },

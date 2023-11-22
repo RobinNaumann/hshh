@@ -1,12 +1,17 @@
 import 'dart:async';
 
 import 'package:hshh/util/tri/tri_error/m_tri_error.dart';
+import 'package:html/dom.dart';
+import 'package:html/parser.dart';
 import 'package:http/http.dart' as http;
+export 'package:http/http.dart' show Response;
 import 'package:http/http.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 
 import 'json_tools.dart';
 import 'tools.dart';
+
+Document parseHTML(String source) => parse(source);
 
 extension ApiFuture<T> on Future<T> {
   Future<R> apiThen<R>(FutureOr<R> Function(T v) onValue,
@@ -27,10 +32,10 @@ extension ApiFuture<T> on Future<T> {
   }
 }
 
-Future<String> _apiDo(Uri uri, Future<Response> Function() worker) async {
+Future<Response> _apiDo(Uri uri, Future<Response> Function() worker) async {
   try {
     logger.t("apiTools: sending request to $uri");
-    return (await worker.call()).bodyOrThrow(uri);
+    return (await worker.call()).resOrThrow();
   } on ApiException catch (_) {
     rethrow;
   } catch (e, s) {
@@ -41,41 +46,48 @@ Future<String> _apiDo(Uri uri, Future<Response> Function() worker) async {
 
 /// a save interface for executing get queries. Will throw an ApiException
 /// when something goes wrong
-Future<String> apiGet({required Uri uri, JsonMap<String>? headers}) =>
+Future<Response> apiGet({required Uri uri, JsonMap<String>? headers}) =>
     _apiDo(uri, () => http.get(uri, headers: headers));
 
 /// a save interface for executing delete queries. Will throw an ApiException
 /// when something goes wrong
-Future<String> apiDelete({required Uri uri, JsonMap<String>? headers}) =>
+Future<Response> apiDelete({required Uri uri, JsonMap<String>? headers}) =>
     _apiDo(uri, () => http.delete(uri, headers: headers));
 
 /// a save interface for executing post queries. Will throw an ApiException
 /// when something goes wrong
-Future<String> apiPost(
+Future<Response> apiPost(
     {required Uri uri, JsonMap<String>? headers, Object? body}) {
   logger.t("POST BODY: $body");
   return _apiDo(uri, () => http.post(uri, headers: headers, body: body));
 }
 
 extension ApiResponse on Response {
-  String bodyOrThrow<T>(Uri uri) {
-    switch (statusCode) {
-      case 200:
-        return body;
-      case 400:
-        throw ApiBadRequestException(uri, body);
-      case 401:
-        throw ApiUnauthorizedException(uri, body);
-      case 403:
-        throw ApiForbiddenException(uri, body);
-      case 404:
-        throw ApiNotFoundException(uri, body);
-      case 500:
-        throw ApiServerException(uri, body);
-      default:
-        throw ApiException(
-            statusCode, uri, body, "undefined exception: Body: $body");
-    }
+  /*String bodyOrThrow<T>(Uri uri) => switch (statusCode) {
+        200 => body,
+        >= 300 && < 400 => body,
+        400 => throw ApiBadRequestException(uri, body),
+        401 => throw ApiUnauthorizedException(uri, body),
+        403 => throw ApiForbiddenException(uri, body),
+        404 => throw ApiNotFoundException(uri, body),
+        500 => throw ApiServerException(uri, body),
+        _ => throw ApiException(
+            statusCode, uri, body, "undefined exception: Body: $body")
+      };*/
+
+  Response resOrThrow<T>() {
+    final uri = request!.url;
+    return switch (statusCode) {
+      200 => this,
+      >= 300 && < 400 => this,
+      400 => throw ApiBadRequestException(uri, body),
+      401 => throw ApiUnauthorizedException(uri, body),
+      403 => throw ApiForbiddenException(uri, body),
+      404 => throw ApiNotFoundException(uri, body),
+      500 => throw ApiServerException(uri, body),
+      _ => throw ApiException(
+          statusCode, uri, body, "undefined exception: Body: $body")
+    };
   }
 }
 

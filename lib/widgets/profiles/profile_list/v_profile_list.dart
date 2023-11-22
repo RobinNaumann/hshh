@@ -1,4 +1,4 @@
-import 'package:hshh/cubits/c_profiles.dart';
+import 'package:hshh/bits/c_profiles.dart';
 import 'package:hshh/util/elbe_ui/elbe.dart';
 import 'package:hshh/util/tools.dart';
 import 'package:hshh/widgets/profiles/profile_edit/p_profile_edit.dart';
@@ -17,7 +17,7 @@ class ProfileListView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ProfilesCubit.builder(
+    return ProfilesBit.builder(
         onData: (c, data) => Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,

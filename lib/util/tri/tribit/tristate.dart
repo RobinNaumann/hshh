@@ -14,6 +14,8 @@ abstract class TriState<T> extends DataModel {
   bool hasSameData(TriState other) =>
       isData && other.isData && other.hashCode == hashCode;
 
+  R? whenData<R>(R Function(T data) onData) => whenOrNull(onData: onData);
+
   R when<R>(
           {required R Function() onLoading,
           required R Function(dynamic error) onError,
@@ -35,7 +37,7 @@ abstract class TriState<T> extends DataModel {
 class _LoadingTriState<T> extends TriState<T> {
   const _LoadingTriState() : super._();
   @override
-  JsonMap get fields => {};
+  JsonMap get map => {};
 }
 
 class _ErrorTriState<T> extends TriState<T> {
@@ -43,7 +45,7 @@ class _ErrorTriState<T> extends TriState<T> {
   const _ErrorTriState(this.e) : super._();
 
   @override
-  JsonMap get fields => {"e": e};
+  JsonMap get map => {"e": e};
 }
 
 class _DataTriState<T> extends TriState<T> {
@@ -51,5 +53,5 @@ class _DataTriState<T> extends TriState<T> {
   const _DataTriState(this.data) : super._();
 
   @override
-  JsonMap get fields => {"data": data};
+  JsonMap get map => {"data": data};
 }

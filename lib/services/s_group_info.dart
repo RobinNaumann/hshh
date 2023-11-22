@@ -1,4 +1,5 @@
 import 'package:hshh/models/m_group_info.dart';
+import 'package:hshh/services/s_booking.dart';
 import 'package:hshh/util/api_tools.dart';
 import 'package:hshh/util/tools.dart';
 import 'package:html/dom.dart';
@@ -53,8 +54,12 @@ class GroupInfoService {
 
   static Future<GroupInfo> getInfo(String groupName) async {
     print("GET GROUP DATA");
-    final res = await apiGet(uri: getCourseLink(groupName));
-    final html = parse(res);
+    final res = await apiGet(uri: getCourseLink(groupName), headers: {
+      ...apiHeaders,
+      "Referer":
+          "https://www.hochschulsport.uni-hamburg.de/sportcampus/vona-z.html"
+    });
+    final html = parseHTML(res.body);
     final bs = html.getElementsByClassName("bs_kursbeschreibung");
 
     // get first image path
@@ -65,7 +70,7 @@ class GroupInfoService {
       image = fileUrl(
           bs.firstOrNull!.getElementsByTagName("img").first.attributes["src"]!);
     } catch (e) {
-      logger.w("could not parse image for '$groupName'", error: e);
+      logger.t("could not parse image for '$groupName'");
     }
 
     return GroupInfo(

@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:hshh/util/extensions/maybe_map.dart';
 import 'package:lucide_icons/lucide_icons.dart';
@@ -14,6 +15,9 @@ enum InstitutionType {
   bool get isStudent => this == InstitutionType.student;
   bool get isWorker => this == InstitutionType.worker;
   bool get isGuest => this == InstitutionType.guest;
+
+  static InstitutionType? maybe(String? name) =>
+      InstitutionType.values.firstWhereOrNull((e) => e.name == (name ?? ""));
 }
 
 class Institution {

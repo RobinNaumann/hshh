@@ -1,4 +1,5 @@
 import 'package:hshh/util/tools.dart';
+import 'package:hshh/widgets/favorites/p_bookings.dart';
 import 'package:hshh/widgets/favorites/p_favorite.dart';
 import 'package:hshh/widgets/group_list/v_group_list.dart';
 import 'package:hshh/widgets/home/v_group_filter.dart';
@@ -15,8 +16,12 @@ class HomePage extends StatelessWidget {
     return HeroScaffold(
         title: "HsHH",
         leadingIcon: LeadingIcon(
-            icon: Icons.settings, onTap: (c) => pushPage(c, const SettingsPage())),
+            icon: Icons.settings,
+            onTap: (c) => pushPage(c, const SettingsPage())),
         actions: [
+          IconButton.integrated(
+              icon: Icons.ticket,
+              onTap: () => pushPage(context, const BookingsPage())),
           IconButton.integrated(
               icon: Icons.heart,
               onTap: () => pushPage(context, const FavoritePage())),

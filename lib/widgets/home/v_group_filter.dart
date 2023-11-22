@@ -1,4 +1,4 @@
-import 'package:hshh/cubits/c_filter.dart';
+import 'package:hshh/bits/c_filter.dart';
 import 'package:hshh/util/tools.dart';
 import 'package:hshh/widgets/filter/p_filter.dart';
 import 'package:hshh/widgets/home/p_search.dart';
@@ -11,7 +11,6 @@ class GroupFilterView extends ThemedWidget {
 
   @override
   Widget make(context, theme) {
-    final mAcc = theme.color.activeScheme.minorAccent;
     return Column(
         children: [
       MaybeHero(
@@ -21,7 +20,7 @@ class GroupFilterView extends ThemedWidget {
             border: Border.none,
             padding:
                 const RemInsets(left: 1, right: 0.5, top: 0.4, bottom: 0.4),
-            child: FilterCubit.builder(onData: (cubit, filter) {
+            child: FilterBit.builder(onData: (bit, filter) {
               return Row(
                   children: [
                 Expanded(
@@ -46,7 +45,7 @@ class GroupFilterView extends ThemedWidget {
                           ),
                           if (filter.text.isNotEmpty)
                             IconButton.action(
-                                icon: Icons.x, onTap: () => cubit.withText("")),
+                                icon: Icons.x, onTap: () => bit.withText("")),
                         ].spaced(amount: 0.6),
                       )),
                 ),

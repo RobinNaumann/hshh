@@ -1,3 +1,4 @@
+import '../../bits/c_preferences.dart';
 import '../../util/elbe_ui/elbe.dart';
 
 class SettingsPage extends StatelessWidget {
@@ -9,23 +10,27 @@ class SettingsPage extends StatelessWidget {
         title: "Einstellungen",
         leadingIcon: const LeadingIcon.close(),
         body: Padded.all(
-          child: ListView(
+            child: PreferencesBit.builder(
+          onData: (c, prefs) => ListView(
             clipBehavior: Clip.none,
             children: [
               const Title.h5("Anzeige", topPadded: false),
               ToggleButtons(
-                  selected: "light",
+                  selected: prefs.themeMode,
                   items: const [
                     MultiToggleItem(
-                        key: "light", label: "Hell", icon: Icons.sun),
+                        key: ColorThemeMode.light,
+                        label: "Hell",
+                        icon: Icons.sun),
                     MultiToggleItem(
-                        key: "dark", label: "Dunkel", icon: Icons.moon),
-                    MultiToggleItem(
-                        key: "system", label: "System", icon: Icons.cog)
+                        key: ColorThemeMode.dark,
+                        label: "Dunkel",
+                        icon: Icons.moon),
+                    MultiToggleItem(key: null, label: "System", icon: Icons.cog)
                   ],
-                  onSelect: (v) {})
+                  onSelect: (v) => c.setThemeMode(v))
             ],
           ),
-        ));
+        )));
   }
 }

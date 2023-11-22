@@ -1,15 +1,15 @@
 import 'package:hshh/util/elbe_ui/elbe.dart';
 import 'package:hshh/util/tools.dart';
+import 'package:hshh/util/tri/tribit/tribit.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 
-import '../tri_cubit.dart';
 import 'm_tri_error.dart';
 
 class TriErrorView extends StatelessWidget {
-  final TriCubit cubit;
+  final TriBit bit;
   final dynamic error;
 
-  const TriErrorView({super.key, required this.cubit, this.error});
+  const TriErrorView({super.key, required this.bit, this.error});
 
   @override
   Widget build(BuildContext context) {
@@ -46,7 +46,7 @@ class TriErrorView extends StatelessWidget {
                 ]),
           ),
           TextButton.icon(
-              onPressed: cubit.reload,
+              onPressed: bit.reload,
               icon: const Icon(LucideIcons.rotateCcw),
               label: const Text("neu laden"))
         ],

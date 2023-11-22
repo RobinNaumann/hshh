@@ -1,12 +1,10 @@
 import 'package:hshh/services/s_event_times.dart';
+import 'package:hshh/util/tri/tribit/tribit.dart';
 
-import '../util/tri/tri_cubit.dart';
+class EventTimesBit extends TriBit<EventTimesSession> {
+  static const builder = TriBuilder<EventTimesSession, EventTimesBit>.make;
 
-class EventTimesCubit extends TriCubit<EventTimesSession> {
-  static const provider = TriProvider<EventTimesCubit>;
-  static const builder = TriCubit.builder<EventTimesCubit, EventTimesSession>;
-
-  EventTimesCubit(
+  EventTimesBit(
       {required String bsCode,
       required String bookingId,
       required String groupId})

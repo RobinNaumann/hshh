@@ -42,7 +42,8 @@ class ExcubiaApiRepo {
     final uri = _makeUri(path, parameters);
     logger.t("posting parameters: $parameters");
     return _parse<T, JsonMap>(
-        await apiPost(uri: uri, headers: headers, body: jsonEncode(body)),
+        (await apiPost(uri: uri, headers: headers, body: jsonEncode(body)))
+            .body,
         parser);
   }
 
@@ -54,7 +55,8 @@ class ExcubiaApiRepo {
           JsonMap? parameters,
           required T Function(JsonMap) parser}) async =>
       _parse<T, JsonMap>(
-          await apiGet(uri: _makeUri(path, parameters), headers: headers),
+          (await apiGet(uri: _makeUri(path, parameters), headers: headers))
+              .body,
           parser);
 
   Future<List<T>> getList<T>(
@@ -62,7 +64,8 @@ class ExcubiaApiRepo {
           JsonMap? parameters,
           required T Function(JsonMap) parser}) async =>
       _parseList<T>(
-          await apiGet(uri: _makeUri(path, parameters), headers: headers),
+          (await apiGet(uri: _makeUri(path, parameters), headers: headers))
+              .body,
           parser);
 
   Future<T> getCustom<T, I>(
@@ -70,7 +73,8 @@ class ExcubiaApiRepo {
           JsonMap? parameters,
           required T Function(I) parser}) async =>
       _parse<T, I>(
-          await apiGet(uri: _makeUri(path, parameters), headers: headers),
+          (await apiGet(uri: _makeUri(path, parameters), headers: headers))
+              .body,
           parser);
 
   // ==== INTERNAL ====

@@ -1,12 +1,12 @@
 import 'package:hshh/util/json_tools.dart';
 
 abstract class DataModel {
-  JsonMap<dynamic> get fields;
+  JsonMap<dynamic> get map;
 
   const DataModel();
 
   @override
-  String toString() => "$runtimeType$fields";
+  String toString() => "$runtimeType$map";
 
   @override
   int get hashCode => toString().hashCode;

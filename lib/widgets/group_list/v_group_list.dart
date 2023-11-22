@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:hshh/cubits/c_courses.dart';
-import 'package:hshh/cubits/c_filter.dart';
+import 'package:hshh/bits/c_courses.dart';
+import 'package:hshh/bits/c_filter.dart';
 import 'package:hshh/models/m_course.dart';
 import 'package:hshh/util/extensions/widget_list.dart';
-import 'package:hshh/util/tri/tri_cubit.dart';
+import 'package:hshh/util/tri/tribit/tribit.dart';
 
 import 'v_group_snippet.dart';
 
@@ -16,11 +16,11 @@ class GroupList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CoursesCubit.builder(
-        onLoading: loadingView,
-        onError: errorView,
+    return CoursesBit.builder(
+        onLoading: triLoadingView,
+        onError: triErrorView,
         onData: (cubit, data) => filtered
-            ? FilterCubit.builder(
+            ? FilterBit.builder(
                 onData: (_, filter) => _list(filter.filter(data.groups)))
             : _list(data.groups));
   }

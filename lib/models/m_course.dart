@@ -11,11 +11,11 @@ class CoursesInfo extends DataModel {
       required this.groups});
 
   @override
-  get fields =>
+  get map =>
       {"locations": locations, "categories": categories, "groups": groups};
 }
 
-class EventLocation {
+class EventLocation extends DataModel {
   final String name;
   final double lat;
   final double long;
@@ -24,10 +24,7 @@ class EventLocation {
       {required this.name, required this.lat, required this.long});
 
   @override
-  String toString() => "EventLocation{"
-      "name: $name, "
-      "lat: $lat, "
-      "long: $long}";
+  get map => {"name": name, "lat": lat, "long": long};
 }
 
 class CourseEvent extends DataModel {
@@ -49,7 +46,7 @@ class CourseEvent extends DataModel {
       bookingId: bookingId);
 
   @override
-  get fields => {
+  get map => {
         "weekday": weekday,
         "locationId": locationId,
         "timespan": timespan,
@@ -75,7 +72,7 @@ class CourseGroup extends DataModel {
       allCourses.indexWhere((c) => c.type == CourseType.courseSwimcard) >= 0;
 
   @override
-  get fields => {"name": name, "allCourses": allCourses};
+  get map => {"name": name, "allCourses": allCourses};
 }
 
 class Course extends DataModel {
@@ -108,7 +105,7 @@ class Course extends DataModel {
       required this.type});
 
   @override
-  get fields => {
+  get map => {
         "id": id,
         "groupName": groupName,
         "courseName": courseName,

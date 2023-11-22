@@ -1,4 +1,4 @@
-import 'package:hshh/cubits/c_favorites.dart';
+import 'package:hshh/bits/c_favorites.dart';
 import 'package:hshh/util/elbe_ui/elbe.dart';
 import 'package:hshh/util/tools.dart';
 
@@ -8,7 +8,7 @@ class CourseFavButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return FavoritesCubit.builder(
+    return FavoritesBit.builder(
         small: true,
         onData: (cubit, data) {
           bool isFav = cubit.isFavorite(courseId);

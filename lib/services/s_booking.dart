@@ -1,14 +1,30 @@
 import 'dart:developer';
 
-import 'package:hshh/cubits/c_profiles.dart';
+import 'package:hshh/bits/c_profiles.dart';
+import 'package:hshh/models/m_booking_confirmation.dart';
 import 'package:hshh/models/m_booking_data.dart';
+import 'package:hshh/models/m_data.dart';
+import 'package:hshh/models/m_event_time.dart';
 import 'package:hshh/services/d_institutions.dart';
+import 'package:hshh/util/elbe_ui/src/util/unix_date.dart';
+import 'package:hshh/util/extensions/maybe_map.dart';
 import 'package:hshh/util/json_tools.dart';
 import 'package:hshh/util/tools.dart';
 import 'package:html/dom.dart';
 import 'package:html/parser.dart';
+import 'package:http/http.dart' as http;
 
+import '../models/m_course.dart';
 import '../util/api_tools.dart';
+
+const apiHeaders = {
+  "Origin": "https://buchung.hochschulsport-hamburg.de",
+  "cache-control": "max-age=0",
+  "content-type": "application/x-www-form-urlencoded",
+  "Referrer-Policy": "strict-origin-when-cross-origin",
+  "User-Agent":
+      "Mozilla/5.0 (Macintosh; Intel Mac OS X x.y; rv:42.0) Gecko/20100101 Firefox/70.0"
+};
 
 const profileOrder = [
   "vorname",
@@ -22,7 +38,15 @@ const profileOrder = [
   "telefon"
 ];
 
-class Confirmation {
+class BookingResponse {
+  final BookingConfirmation? confirmation;
+  final String? htmlMessage;
+
+  const BookingResponse.valid(this.confirmation) : htmlMessage = null;
+  const BookingResponse.message(this.htmlMessage) : confirmation = null;
+}
+
+class Confirmation extends DataModel {
   final String doc;
   final Element offer;
   final Element profile;
@@ -33,15 +57,29 @@ class Confirmation {
       required this.offer,
       required this.profile,
       required this.formdata});
+
+  @override
+  JsonMap get map => {
+        "doc": doc,
+        "offer": offer,
+        "profile": profile,
+        "formdata": formdata,
+      };
 }
 
 class BookingReqData {
   final String sessionId;
   final String dateId;
   final Profile profile;
+  final Course course;
+  final EventTime time;
 
   const BookingReqData(
-      {required this.sessionId, required this.dateId, required this.profile});
+      {required this.sessionId,
+      required this.dateId,
+      required this.profile,
+      required this.course,
+      required this.time});
 }
 
 class CourseBooking {
@@ -62,10 +100,11 @@ class BookingService {
       Uri.https('buchung.hochschulsport-hamburg.de', '/cgi/anmeldung.fcgi');
 
   static Future<BookingData> data(String dateId, String sessionId) async {
-    final html = parse(await apiPost(
-        uri: _uri,
-        headers: {'Referer': "https://buchung.hochschulsport-hamburg.de/"},
-        body: {"fid": sessionId, dateId: "buchen"}));
+    final html = parseHTML((await apiPost(
+            uri: _uri,
+            headers: {...apiHeaders, 'Referer': _uri.toString()},
+            body: {"fid": sessionId, dateId: "buchen"}))
+        .body);
 
     return BookingData(
         offer: _getOffer(html),
@@ -74,11 +113,12 @@ class BookingService {
         institutions: Institution.list);
   }
 
-  static Future<Confirmation> confirm(BookingReqData data) async {
-    final res = await _book(data, null);
-    final dom = parse(res);
+  static Future<Confirmation> confirm({required BookingReqData data}) async {
+    await Future.delayed(const Duration(seconds: 10));
+    final res = await _getConfirmPage(_makeBody(data, null));
+    final dom = parseHTML(res.body);
     return Confirmation(
-        doc: res,
+        doc: res.body,
         offer: dom.getElementById("bs_ag")!,
         profile: dom.getElementById("bs_form_main")!,
         formdata: dom
@@ -89,53 +129,61 @@ class BookingService {
             .attributes["value"]!);
   }
 
-  static Future<String> book(BookingReqData data, String formdata) =>
-      _book(data, formdata);
+  static Future<BookingResponse> book(
+      {required Confirmation confirmation,
+      required BookingReqData data}) async {
+    final res = await _book(_uri, {...apiHeaders, "Referer": _uri.toString()},
+        _makeBody(data, confirmation.formdata));
 
-  static Future<String> _book(BookingReqData data, String? formdata) async {
-    final book = formdata != null;
+    final red = res.$1; // the redirect uri
 
-    final formData = {
+    if (red != null && red.contains("Bestaetigung_")) {
+      final bookingId =
+          red.split("Bestaetigung_").last.replaceMulti([".html", ".pdf"]);
+      return BookingResponse.valid(BookingConfirmation(
+          groupName: data.course.groupName,
+          courseName: data.course.courseName,
+          starttime: data.time.start.asUnixMs,
+          endtime: data.time.end.asUnixMs,
+          profileEmail: data.profile.get("email"),
+          profileName: data.profile.get("vorname"),
+          profileInst: data.profile.get("statusorig"),
+          bookingId: bookingId));
+    }
+
+    return BookingResponse.message(res.$2!);
+  }
+
+  static JsonMap<String> _makeBody(BookingReqData data, String? formdata) {
+    final end = formdata != null;
+
+    return {
       "fid": data.sessionId,
-      if (book) "Phase": "final",
+      if (end) "Phase": "final",
       "Termin": data.dateId.split("_").last.trim(),
-      if (!book) ...{"pw_email": "", "pw_pwd_${data.sessionId}": ""},
-      //if (book) ...{"tnbed": "1 "},
+      if (!end) ...{"pw_email": "", "pw_pwd_${data.sessionId}": ""},
+      if (end) ...{"tnbed": "1 "},
       "sex": "X",
       ..._sortProfile(data.profile),
-      if (!book) ...{"newsletter": "", "tnbed": "1"},
-      if (book) ...{
+      if (!end) ...{"newsletter": "", "tnbed": "1"},
+      if (end) ...{
         "preis_anz": "0,00 EUR",
         "_formdata": formdata,
         "pw_newpw_${data.sessionId}": "",
       },
     };
+  }
 
+  static Future<Response> _getConfirmPage(JsonMap<String> body) async {
     final res = await apiPost(
         uri: _uri,
         headers: {
-          //"accept":"text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
-          //"accept-language": "en-GB,en-US;q=0.9,en;q=0.8,de;q=0.7",
-          "cache-control": "max-age=0",
-          "content-type": "application/x-www-form-urlencoded",
-          /*"sec-ch-ua":
-              "\"Google Chrome\";v=\"119\", \"Chromium\";v=\"119\", \"Not?A_Brand\";v=\"24\"",
-          "sec-ch-ua-mobile": "?0",
-          "sec-ch-ua-platform": "\"macOS\"",
-          "sec-fetch-dest": "document",
-          "sec-fetch-mode": "navigate",
-          "sec-fetch-site": "same-origin",
-          "sec-fetch-user": "?1",*/
-          //"upgrade-insecure-requests": "1",
-          "Referer":
-              "https://buchung.hochschulsport-hamburg.de/cgi/anmeldung.fcgi",
-          "Referrer-Policy": "strict-origin-when-cross-origin",
-          "User-Agent":
-              "Mozilla/5.0 (Macintosh; Intel Mac OS X x.y; rv:42.0) Gecko/20100101 Firefox/70.0"
+          ...apiHeaders,
+          "Referer": _uri.toString(),
         },
-        body: formData);
+        body: body);
 
-    log(res);
+    log(res.body);
     return res;
   }
 
@@ -191,5 +239,18 @@ class BookingService {
       }
     }
     return res;
+  }
+
+  static Future<(String? url, String? http)> _book(
+      Uri uri, JsonMap<String> headers, dynamic body) async {
+    http.Request req = http.Request("Post", uri)
+      ..bodyFields = body
+      ..headers.addAll(headers)
+      ..followRedirects = false;
+
+    final r = await http.Client().send(req);
+    final res = await http.Response.fromStream(r);
+
+    return (res.headers['location'], res.resOrThrow().body);
   }
 }

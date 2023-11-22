@@ -1,5 +1,5 @@
 import 'package:collection/collection.dart';
-import 'package:hshh/cubits/c_profiles.dart';
+import 'package:hshh/bits/c_profiles.dart';
 import 'package:hshh/services/d_institutions.dart';
 import 'package:hshh/util/extensions/maybe_map.dart';
 import 'package:hshh/util/json_tools.dart';

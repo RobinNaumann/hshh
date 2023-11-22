@@ -1,13 +1,13 @@
 import 'package:collection/collection.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:hshh/cubits/c_courses.dart';
+import 'package:hshh/bits/c_courses.dart';
+import 'package:hshh/bits/c_group_info.dart';
 import 'package:hshh/widgets/course_page/p_course.dart';
 import 'package:hshh/widgets/home/v_card_icon.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 
-import '../../../cubits/c_group_info.dart';
 import '../../../models/m_course.dart';
 import '../../../util/elbe_ui/elbe.dart';
+import '../../../util/tri/tribit/tribit.dart';
 
 class CourseSnippet extends StatelessWidget {
   final bool showGroupname;
@@ -17,7 +17,7 @@ class CourseSnippet extends StatelessWidget {
       {super.key, required this.course, this.showGroupname = false});
 
   String _getLocations(BuildContext c) => course.locations
-      .map((i) => c.read<CoursesCubit>().getLocation(i)?.name ?? "")
+      .map((i) => c.bit<CoursesBit>().getLocation(i)?.name ?? "")
       .join("\n");
 
   Widget _costView(CourseType type, List<double?> cost) {
@@ -66,8 +66,7 @@ class CourseSnippet extends StatelessWidget {
                   context,
                   MaterialPageRoute(
                       builder: (_) => CoursePage(
-                          course: course,
-                          cubit: context.read<GroupInfoCubit?>())),
+                          course: course, bit: context.bit<GroupInfoBit>())),
                 ),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,

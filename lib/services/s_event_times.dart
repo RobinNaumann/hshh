@@ -1,4 +1,5 @@
 import 'package:hshh/models/m_event_time.dart';
+import 'package:hshh/services/s_booking.dart';
 import 'package:hshh/util/extensions/maybe_map.dart';
 import 'package:hshh/util/tools.dart';
 import 'package:html/parser.dart';
@@ -17,16 +18,16 @@ class EventTimesService {
       Uri.https('buchung.hochschulsport-hamburg.de', '/cgi/anmeldung.fcgi');
 
   static Future<EventTimesSession> getTimes(
-      String groupId, String bsCode, String bookingId) async {
-    print("GET_TIMES");
-    final html = parse(await apiPost(uri: _uri, headers: {
-      'Origin': "https://buchung.hochschulsport-hamburg.de",
-      'Referer':
-          "https://buchung.hochschulsport-hamburg.de/", //angebote/Wintersemester_2023_2024/_Triathlon.html"
+      String groupLink, String bsCode, String bookingId) async {
+    final html = parseHTML((await apiPost(uri: _uri, headers: {
+      ...apiHeaders,
+      "Referer":
+          "https://buchung.hochschulsport-hamburg.de/angebote/Wintersemester_2023_2024/_Pilates.html"
     }, body: {
       "BS_Code": bsCode,
       bookingId: "Vormerkliste"
-    }));
+    }))
+        .body);
     final bs = html.getElementsByClassName("bs_form_row");
 
     final List<EventTime> times = [];

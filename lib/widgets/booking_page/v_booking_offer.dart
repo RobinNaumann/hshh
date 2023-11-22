@@ -1,6 +1,6 @@
 import 'package:flutter_html/flutter_html.dart';
 
-import '../../cubits/c_booking_data.dart';
+import '../../bits/c_booking_data.dart';
 import '../../util/elbe_ui/elbe.dart';
 
 class BookingOfferView extends StatelessWidget {
@@ -8,7 +8,7 @@ class BookingOfferView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BookingDataCubit.builder(
+    return BookingDataBit.builder(
         onData: (cubit, data) => Card(
             color: Colors.white,
             child: Html.fromElement(documentElement: data.offerHtml, style: {

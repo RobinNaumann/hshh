@@ -1,5 +1,4 @@
-
-import '../../cubits/c_filter.dart';
+import '../../bits/c_filter.dart';
 import '../../util/elbe_ui/elbe.dart';
 
 class FilterCardsView extends StatelessWidget {
@@ -7,7 +6,7 @@ class FilterCardsView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return FilterCubit.builder(
+    return FilterBit.builder(
         onData: (cubit, filter) => ToggleButtons(
             selected:
                 (filter.onlyFlexicard ? 1 : 0) + (filter.onlySwimcard ? 2 : 0),

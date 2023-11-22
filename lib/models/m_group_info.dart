@@ -1,7 +1,6 @@
 import 'package:collection/collection.dart';
 import 'package:hshh/models/m_data.dart';
 import 'package:hshh/services/s_group_info.dart';
-import 'package:hshh/util/json_tools.dart';
 
 class CourseInfo extends DataModel {
   final String id;
@@ -14,7 +13,7 @@ class CourseInfo extends DataModel {
       {required this.id, required this.groupId, required this.bookingId});
 
   @override
-  get fields => {"id": id, "groupId": groupId, "bookingId": bookingId};
+  get map => {"id": id, "groupId": groupId, "bookingId": bookingId};
 }
 
 class GroupInfo extends DataModel {
@@ -37,6 +36,6 @@ class GroupInfo extends DataModel {
   CourseInfo? course(String id) => courses?.firstWhereOrNull((e) => e.id == id);
 
   @override
-  get fields =>
+  get map =>
       {"groupId": groupId, "description": description, "imageURL": imageURL};
 }

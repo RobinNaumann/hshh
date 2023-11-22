@@ -11,7 +11,7 @@ extension MaybeList<B> on List<B> {
 
 extension ExtendableString on String {
   String add(String? s) => s != null ? (this + s) : this;
-  String replaceMulti(List<String> patterns, String replace) {
+  String replaceMulti(List<String> patterns, [String replace = ""]) {
     String res = this;
     for (final p in patterns) {
       res = res.replaceAll(p, replace);

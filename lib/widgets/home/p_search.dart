@@ -1,7 +1,7 @@
 import 'package:hshh/util/elbe_ui/elbe.dart';
 import 'package:hshh/util/elbe_ui/src/components/core/maybe_hero.dart';
 
-import '../../cubits/c_filter.dart';
+import '../../bits/c_filter.dart';
 import '../../util/tools.dart';
 import '../filter/p_filter.dart';
 import '../group_list/v_group_list.dart';
@@ -10,7 +10,7 @@ class SearchPage extends ThemedWidget {
   final String text;
   const SearchPage({super.key, required this.text});
 
-  Widget _searchBar(TextEditingController ctrl, FilterCubit cubit, String text,
+  Widget _searchBar(TextEditingController ctrl, FilterBit cubit, String text,
           bool focus) =>
       Align(
         alignment: Alignment.topCenter,
@@ -46,7 +46,7 @@ class SearchPage extends ThemedWidget {
     return Scaffold(
         leadingIcon: const LeadingIcon.back(),
         title: "",
-        customTitle: FilterCubit.builder(
+        customTitle: FilterBit.builder(
             onData: (cubit, filter) => MaybeHero(
                   tag: "home_search",
                   builder: (traveling) =>
