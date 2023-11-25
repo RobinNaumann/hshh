@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:hive/hive.dart';
 import 'package:hshh/bits/c_preferences.dart';
 import 'package:hshh/models/m_booking_confirmation.dart';
@@ -28,7 +29,7 @@ class StorageService {
             }
           })
           .whereType<BookingConfirmation>()
-          .toList();
+          .sorted((a, b) => (a.starttime ?? 0).compareTo(b.starttime ?? 0));
 
   static Future<int> bookingAdd(BookingConfirmation conf) async =>
       await (await _bookingsBox).add(conf.map);
@@ -75,7 +76,8 @@ class StorageService {
 // SETTINGS
   static Future<Preferences> getPreferences() async {
     try {
-      return Preferences.fromMap(await (await _prefBox).get("preferences"));
+      return Preferences.fromMap(
+          await (await _prefBox).toMap().map((k, v) => MapEntry("$k", v)));
     } catch (e) {
       logger.t("could not parse saved preferences", error: e);
       return const Preferences();
@@ -83,5 +85,5 @@ class StorageService {
   }
 
   static Future<void> setPreferences(Preferences preferences) async =>
-      await (await _prefBox).put("preferences", preferences.map);
+      await (await _prefBox).putAll(preferences.map);
 }

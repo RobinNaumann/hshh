@@ -96,6 +96,8 @@ class CourseBooking {
 }
 
 class BookingService {
+  static const confirmDelay = Duration(seconds: 6);
+
   static final _uri =
       Uri.https('buchung.hochschulsport-hamburg.de', '/cgi/anmeldung.fcgi');
 
@@ -114,7 +116,7 @@ class BookingService {
   }
 
   static Future<Confirmation> confirm({required BookingReqData data}) async {
-    await Future.delayed(const Duration(seconds: 10));
+    await Future.delayed(confirmDelay);
     final res = await _getConfirmPage(_makeBody(data, null));
     final dom = parseHTML(res.body);
     return Confirmation(
@@ -145,10 +147,11 @@ class BookingService {
           courseName: data.course.courseName,
           starttime: data.time.start.asUnixMs,
           endtime: data.time.end.asUnixMs,
-          profileEmail: data.profile.get("email"),
+          profileEmail: data.profile.get("email")!,
           profileName: data.profile.get("vorname"),
           profileInst: data.profile.get("statusorig"),
-          bookingId: bookingId));
+          bookingId: bookingId,
+          formdataId: confirmation.formdata));
     }
 
     return BookingResponse.message(res.$2!);
@@ -252,5 +255,32 @@ class BookingService {
     final res = await http.Response.fromStream(r);
 
     return (res.headers['location'], res.resOrThrow().body);
+  }
+
+  static Future<String> getConfirmation(String bookingId, String email) async {
+    final client = http.Client();
+    final link =
+        "https://buchung.hochschulsport-hamburg.de/cgi/anmeldung.fcgi/Bestaetigung_$bookingId.html";
+
+    var redirects = 0;
+    http.Response? res;
+
+    while (redirects == 0 ||
+        ((res?.statusCode ?? 0) >= 300 && (res?.statusCode ?? 0) < 400)) {
+      final uri = Uri.parse(redirects == 0 ? link : res!.headers["location"]!);
+
+      http.Request req = http.Request(redirects == 0 ? "POST" : "GET", uri)
+        ..headers.addAll({...apiHeaders, "referer": link});
+      if (redirects == 0) {
+        req.bodyFields = {"fid": "", "email": email};
+      }
+      final r = await http.Response.fromStream(await client.send(req));
+
+      print("${r.statusCode} $uri ${r.body}");
+      res = r;
+      redirects++;
+    }
+    client.close();
+    return res!.resOrThrow().body;
   }
 }

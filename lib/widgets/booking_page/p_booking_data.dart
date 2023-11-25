@@ -94,7 +94,7 @@ class _BookingDataPageState extends State<_BookingDataPage> {
                             child: BookingOfferView()),
                         const Title.h5("Person"),
                         ProfileListView(
-                            selectedId: profileId,
+                            selectedId: profileId ?? -1,
                             onPressed: (id, p) =>
                                 setState(() => profileId = id))
                         //const BookingFormView()

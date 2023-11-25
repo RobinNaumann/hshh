@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:hshh/services/s_devlog.dart';
 import 'package:logger/logger.dart';
 
 final Logger logger = Logger(
@@ -22,8 +23,10 @@ void showSnackbar(BuildContext context, String text) {
   ScaffoldMessenger.of(context).showSnackBar(snackBar);
 }
 
-void pushPage(BuildContext context, Widget page) =>
-    Navigator.push(context, MaterialPageRoute(builder: (context) => page));
+void pushPage(BuildContext context, Widget page) {
+  DevLog.view(page.runtimeType.toString());
+  Navigator.push(context, MaterialPageRoute(builder: (context) => page));
+}
 
 void popPage(BuildContext context) => Navigator.maybePop(context);
 

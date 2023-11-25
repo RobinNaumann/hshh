@@ -33,17 +33,23 @@ class IconButton extends ThemedWidget {
 
   @override
   Widget make(context, theme) {
-    return Card(
-        padding: null,
-        constraints:
-            constraints ?? const RemConstraints(minHeight: 2.5, minWidth: 2.5),
-        border: (theme.geometry.buttonBorder ? const Border() : Border.none)
-            .copyWith(borderRadius: BorderRadius.circular(200)),
-        style: style,
-        state: onTap != null ? ColorStates.neutral : ColorStates.disabled,
-        child: _Inkwell(
-          onPressed: onTap,
-          child: Icon(icon),
-        ));
+    return Tooltip(
+        textStyle: theme.type.bodyM.toTextStyle(),
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10),
+            color: theme.color.activeMode..withOpacity(0.8)),
+        message: 'I am a Tooltip',
+        child: Card(
+            padding: null,
+            constraints: constraints ??
+                const RemConstraints(minHeight: 2.5, minWidth: 2.5),
+            border: (theme.geometry.buttonBorder ? const Border() : Border.none)
+                .copyWith(borderRadius: BorderRadius.circular(200)),
+            style: style,
+            state: onTap != null ? ColorStates.neutral : ColorStates.disabled,
+            child: _Inkwell(
+              onPressed: onTap,
+              child: Icon(icon),
+            )));
   }
 }

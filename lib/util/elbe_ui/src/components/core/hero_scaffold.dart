@@ -8,7 +8,10 @@ class HeroScaffold extends ThemedWidget {
   final Widget hero;
   final List<Widget>? actions;
   final LeadingIcon? leadingIcon;
-  final Widget body;
+  final Widget? customTitle;
+  final bool centerTitle;
+  final Widget? body;
+  final List<Widget>? bodyList;
 
   const HeroScaffold(
       {super.key,
@@ -16,7 +19,12 @@ class HeroScaffold extends ThemedWidget {
       required this.title,
       this.actions,
       this.leadingIcon,
-      required this.body});
+      this.body,
+      this.bodyList,
+      this.customTitle,
+      this.centerTitle = true})
+      : assert((body != null) ^ (bodyList != null),
+            "Provide exactly one of body or bodyList");
 
   Widget _heroBase(Widget child, bool left, bool single) => Card(
       constraints: const RemConstraints(minHeight: 3.1),
@@ -56,9 +64,12 @@ class HeroScaffold extends ThemedWidget {
               collapsedHeight: 83,
               backgroundColor: prim.plain.neutral,
               automaticallyImplyLeading: false,
-              title: InvisibleExpandedHeader(child: Text.h4(title)),
+              title: customTitle ??
+                  InvisibleExpandedHeader(
+                    child: Text.h4(title, textAlign: TextAlign.center),
+                  ),
               expandedHeight: 300.0,
-              centerTitle: true,
+              centerTitle: centerTitle,
               flexibleSpace: Stack(
                 fit: StackFit.expand,
                 children: [
@@ -80,7 +91,8 @@ class HeroScaffold extends ThemedWidget {
                   )
                 ],
               )),
-          SliverToBoxAdapter(child: body)
+          if (body != null) SliverToBoxAdapter(child: body),
+          if (bodyList != null) ...bodyList!
         ]));
   }
 }

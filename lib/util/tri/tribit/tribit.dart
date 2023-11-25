@@ -8,6 +8,7 @@ import '../tri_error/v_tri_error.dart';
 import './tristate.dart';
 
 part 'tri_builder.dart';
+part 'tri_notifier.dart';
 part 'tri_provider.dart';
 
 extension TriContext on BuildContext {

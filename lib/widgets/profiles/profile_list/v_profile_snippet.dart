@@ -9,7 +9,7 @@ import '../../../util/elbe_ui/elbe.dart';
 import '../profile_edit/p_profile_edit.dart';
 
 class ProfileSnippet extends StatelessWidget {
-  final bool selected;
+  final bool? selected;
   final int id;
   final Profile profile;
   final Function(int id, Profile p)? onPressed;
@@ -18,7 +18,7 @@ class ProfileSnippet extends StatelessWidget {
       {super.key,
       required this.id,
       required this.profile,
-      this.selected = false,
+      this.selected,
       this.onPressed});
 
   Widget _typeView() {
@@ -46,7 +46,7 @@ class ProfileSnippet extends StatelessWidget {
                 context, ProfileEditPage(profileKey: id, profile: profile))
             : null,
         onTap: onPressed != null ? () => onPressed!(id, profile) : null,
-        style: selected ? ColorStyles.minorAccent : null,
+        style: (selected ?? false) ? ColorStyles.minorAccent : null,
         state: onPressed != null ? null : ColorStates.disabled,
         child: Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
           Expanded(
@@ -62,8 +62,8 @@ class ProfileSnippet extends StatelessWidget {
           ),
           Padding(
             padding: const EdgeInsets.only(left: 10),
-            child: selected
-                ? const Icon(LucideIcons.check)
+            child: selected != null
+                ? Icon(selected! ? Icons.checkCircle : Icons.circle)
                 : const SizedBox.shrink(),
           )
         ]));

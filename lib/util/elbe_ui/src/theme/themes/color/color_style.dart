@@ -1,4 +1,5 @@
-import 'package:flutter/material.dart';
+import 'dart:ui';
+
 import 'package:hshh/util/elbe_ui/elbe.dart';
 
 const Color grey = Color(0xFF808080);
@@ -49,13 +50,31 @@ extension RichColor on Color {
   Color get desaturated => HSLColor.fromColor(this).withSaturation(0).toColor();
 }
 
-class LayerColor extends Color {
+abstract class _JsonColor extends Color {
+  Map<String, dynamic> get map;
+
+  _JsonColor.from(Color c) : super(c.value);
+
+  @override
+  String toString() => "$runtimeType$map";
+
+  @override
+  int get hashCode => toString().hashCode;
+
+  @override
+  bool operator ==(Object other) => hashCode == other.hashCode;
+}
+
+class LayerColor extends _JsonColor {
   final Color back;
   final Color front;
   final Color border;
 
+  LayerColor.from(LayerColor c)
+      : this(back: c.back, front: c.front, border: c.border);
+
   LayerColor({required this.back, required this.front, required this.border})
-      : super(back.value);
+      : super.from(back);
 
   factory LayerColor.fromColor(
           {required Color back, Color? front, Color? border}) =>
@@ -65,21 +84,32 @@ class LayerColor extends Color {
               ? back.inter(1.4)
               : front ?? (back.isBright ? Colors.black : Colors.white),
           border: border ?? back.inter(0.4));
+
+  @override
+  get map => {"back": back, "front": front, "border": border};
 }
 
 enum ColorStates { neutral, hovered, pressed, disabled }
 
-class StateColor {
+class StateColor extends LayerColor {
   final LayerColor neutral;
   final LayerColor hovered;
   final LayerColor pressed;
   final LayerColor disabled;
 
-  const StateColor(
+  StateColor.from(StateColor c)
+      : this(
+            neutral: c.neutral,
+            hovered: c.hovered,
+            pressed: c.pressed,
+            disabled: c.disabled);
+
+  StateColor(
       {required this.neutral,
       required this.hovered,
       required this.pressed,
-      required this.disabled});
+      required this.disabled})
+      : super.from(neutral);
 
   factory StateColor.fromColor(
       {required Color neutral,
@@ -109,9 +139,10 @@ class StateColor {
                     back: dis, front: nlk?.front.desaturated ?? disFront));
   }
 
-  LayerColor? getMaybe(ColorStates? state) => state != null ? get(state) : null;
+  LayerColor? maybeState(ColorStates? state) =>
+      state != null ? this.state(state) : null;
 
-  LayerColor get(ColorStates state) =>
+  LayerColor state(ColorStates state) =>
       [neutral, hovered, pressed, disabled][state.index];
 
   StateColor copyWith(
@@ -124,6 +155,14 @@ class StateColor {
           hovered: hovered ?? this.hovered,
           pressed: pressed ?? this.pressed,
           disabled: disabled ?? this.disabled);
+
+  @override
+  get map => {
+        "neutral": neutral,
+        "hovered": hovered,
+        "pressed": pressed,
+        "disabled": disabled
+      };
 }
 
 enum ColorStyles {
@@ -142,7 +181,7 @@ enum ColorStyles {
   majorAlertInfo
 }
 
-class ColorStyle {
+class ColorStyle extends StateColor {
   static const colorError = Color(0xFFF34343);
   static const colorWarning = Color(0xFFF6C821);
   static const colorSuccess = Color(0xFF29AC5E);
@@ -162,7 +201,23 @@ class ColorStyle {
   final StateColor minorAlertInfo;
   final StateColor majorAlertInfo;
 
-  const ColorStyle(
+  ColorStyle.from(ColorStyle c)
+      : this(
+            plain: c.plain,
+            action: c.action,
+            actionIntegrated: c.actionIntegrated,
+            minorAccent: c.minorAccent,
+            majorAccent: c.majorAccent,
+            minorAlertError: c.minorAlertError,
+            majorAlertError: c.majorAlertError,
+            minorAlertWarning: c.minorAlertWarning,
+            majorAlertWarning: c.majorAlertWarning,
+            majorAlertSuccess: c.majorAlertSuccess,
+            minorAlertSuccess: c.minorAlertSuccess,
+            minorAlertInfo: c.minorAlertInfo,
+            majorAlertInfo: c.majorAlertInfo);
+
+  ColorStyle(
       {required this.plain,
       required this.action,
       required this.actionIntegrated,
@@ -175,7 +230,8 @@ class ColorStyle {
       required this.majorAlertSuccess,
       required this.minorAlertSuccess,
       required this.minorAlertInfo,
-      required this.majorAlertInfo});
+      required this.majorAlertInfo})
+      : super.from(plain);
 
   factory ColorStyle.fromColor(
       {required Color base,
@@ -230,9 +286,9 @@ class ColorStyle {
             minorAlertInfo ?? StateColor.fromColor(neutral: colorInfo));
   }
 
-  StateColor? getMaybe(ColorStyles? s) => s != null ? get(s) : null;
+  StateColor? maybeStyle(ColorStyles? s) => s != null ? style(s) : null;
 
-  StateColor get(ColorStyles s) => [
+  StateColor style(ColorStyles s) => [
         plain,
         action,
         actionIntegrated,
@@ -247,15 +303,36 @@ class ColorStyle {
         minorAlertInfo,
         majorAlertInfo
       ][s.index];
+
+  @override
+  get map => {
+        "plain": plain,
+        "action": action,
+        "actionIntegrated": actionIntegrated,
+        "minorAccent": minorAccent,
+        "majorAccent": majorAccent,
+        "minorAlertError": minorAlertError,
+        "majorAlertError": majorAlertError,
+        "minorAlertWarning": minorAlertWarning,
+        "majorAlertWarning": majorAlertWarning,
+        "majorAlertSuccess": majorAlertSuccess,
+        "minorAlertSuccess": minorAlertSuccess,
+        "minorAlertInfo": minorAlertInfo,
+        "majorAlertInfo": majorAlertInfo
+      };
 }
 
-class ColorScheme {
+class ColorScheme extends ColorStyle {
   final ColorStyle primary;
   final ColorStyle secondary;
   final ColorStyle inverse;
 
-  const ColorScheme(
-      {required this.primary, required this.secondary, required this.inverse});
+  ColorScheme.from(ColorScheme c)
+      : this(primary: c.primary, secondary: c.secondary, inverse: c.inverse);
+
+  ColorScheme(
+      {required this.primary, required this.secondary, required this.inverse})
+      : super.from(primary);
 
   factory ColorScheme.fromColor(
           {required Color accent,
@@ -273,7 +350,10 @@ class ColorScheme {
           inverse: inverse ??
               ColorStyle.fromColor(accent: accent, base: background.inter(2)));
 
-  ColorStyle get(ColorSchemes s) => [primary, secondary, inverse][s.index];
+  ColorStyle scheme(ColorSchemes s) => [primary, secondary, inverse][s.index];
+
+  @override
+  get map => {"primary": primary, "secondary": secondary, "inverse": inverse};
 }
 
 enum ColorSchemes {
@@ -284,4 +364,33 @@ enum ColorSchemes {
   bool get isPrimary => this == ColorSchemes.primary;
   bool get isSecondary => this == ColorSchemes.secondary;
   bool get isInverse => this == ColorSchemes.inverse;
+}
+
+enum ColorModes {
+  light,
+  dark;
+
+  /// get the currently active mode on the device
+  static ColorModes get fromPlatform =>
+      PlatformDispatcher.instance.platformBrightness == Brightness.light
+          ? ColorModes.light
+          : ColorModes.dark;
+}
+
+class ColorMode extends ColorScheme {
+  final ColorScheme light;
+  final ColorScheme dark;
+
+  ColorMode.from(ColorMode c) : this(light: c.light, dark: c.dark);
+
+  ColorMode({required this.light, required this.dark}) : super.from(light);
+
+  factory ColorMode.fromColor({required Color accent}) => ColorMode(
+      light: ColorScheme.fromColor(accent: accent, background: Colors.white),
+      dark: ColorScheme.fromColor(accent: accent, background: Colors.black));
+
+  ColorScheme mode(ColorModes m) => [light, dark][m.index];
+
+  @override
+  get map => {"light": light, "dark": dark};
 }

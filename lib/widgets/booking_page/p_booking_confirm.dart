@@ -6,6 +6,7 @@ import 'package:hshh/util/elbe_ui/elbe.dart';
 import 'package:hshh/util/tools.dart';
 import 'package:hshh/util/tri/tribit/tribit.dart';
 import 'package:hshh/widgets/booking_page/p_booking_result.dart';
+import 'package:hshh/widgets/booking_page/v_booking_checking.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 import '../../models/m_course.dart';
@@ -38,47 +39,53 @@ class BookingConfirmPage extends StatelessWidget {
         child: Scaffold(
           leadingIcon: const LeadingIcon.back(),
           title: "überprüfen",
-          body: BookingConfBit.builder(onData: (cubit, conf) {
-            return Column(
-              children: [
-                Expanded(
-                    child: Padded.all(
-                  child: ListView(
-                    clipBehavior: Clip.none,
-                    children: [
-                      Card(
-                        color: Colors.white,
-                        child: Html.fromElement(
-                            documentElement: conf.offer, style: style),
+          body: BookingConfBit.builder(
+              onError: (bit, error) => Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [triErrorView(bit, error)]),
+              onLoading: (_) => const BookingCheckingView(),
+              onData: (cubit, conf) {
+                return Column(
+                  children: [
+                    Expanded(
+                        child: Padded.all(
+                      child: ListView(
+                        clipBehavior: Clip.none,
+                        children: [
+                          Card(
+                            color: Colors.white,
+                            child: Html.fromElement(
+                                documentElement: conf.offer, style: style),
+                          ),
+                          Card(
+                              color: Colors.white,
+                              child: Html.fromElement(
+                                  documentElement: conf.profile,
+                                  style: {
+                                    ...style,
+                                    ".bs_form_row":
+                                        Style(display: Display.none),
+                                    '.bs_form_row[class*=" "]': Style(
+                                        display: Display.inline,
+                                        padding: HtmlPaddings.only(bottom: 10))
+                                  })),
+                          const Text(_lawText)
+                        ].spaced(),
                       ),
-                      Card(
-                          color: Colors.white,
-                          child: Html.fromElement(
-                              documentElement: conf.profile,
-                              style: {
-                                ...style,
-                                ".bs_form_row": Style(display: Display.none),
-                                '.bs_form_row[class*=" "]': Style(
-                                    display: Display.inline,
-                                    padding: HtmlPaddings.only(bottom: 10))
-                              })),
-                      const Text(_lawText)
-                    ].spaced(),
-                  ),
-                )),
-                BookingDataPage.actionBase(
-                    child: Button.major(
-                        icon: Icons.check,
-                        label: "verbindlich buchen",
-                        onTap: () {
-                          pushPage(
-                              context,
-                              BookingResultPage(
-                                  confirmation: conf, data: data));
-                        }))
-              ],
-            );
-          }),
+                    )),
+                    BookingDataPage.actionBase(
+                        child: Button.major(
+                            icon: Icons.check,
+                            label: "verbindlich buchen",
+                            onTap: () {
+                              pushPage(
+                                  context,
+                                  BookingResultPage(
+                                      confirmation: conf, data: data));
+                            }))
+                  ],
+                );
+              }),
         ));
   }
 }

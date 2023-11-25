@@ -1,3 +1,4 @@
+import 'package:hshh/util/tools.dart';
 import 'package:hshh/widgets/home/v_card_icon.dart';
 
 import '../../models/m_course.dart';
@@ -22,10 +23,7 @@ class GroupSnippet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: () => Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => CourseGroupPage(group: group)),
-      ),
+      onTap: () => pushPage(context, CourseGroupPage(group: group)),
       child: Card(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,

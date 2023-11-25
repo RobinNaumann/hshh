@@ -62,8 +62,10 @@ class _EventTimesView extends StatelessWidget {
                     GroupInfoService.getCourseLink(info.groupId))
                 : Column(
                     children: data.times
-                        .listMap((e) =>
-                            EventTimeSnippet(course: course, eventTime: e))
+                        .listMap((e) => EventTimeSnippet(
+                            course: course,
+                            eventTime: e,
+                            groupLink: groupInfo.webLink))
                         .spaced(),
                   )));
   }

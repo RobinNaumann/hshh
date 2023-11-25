@@ -35,7 +35,7 @@ class HomeFilter extends DataModel {
           onlyBookable: onlyBookable ?? this.onlyBookable);
 
   const HomeFilter.initial()
-      : text = "pila",
+      : text = "",
         onlyFlexicard = false,
         onlySwimcard = false,
         categories = const [],

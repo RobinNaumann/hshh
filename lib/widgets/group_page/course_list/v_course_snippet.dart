@@ -1,6 +1,7 @@
 import 'package:collection/collection.dart';
 import 'package:hshh/bits/c_courses.dart';
 import 'package:hshh/bits/c_group_info.dart';
+import 'package:hshh/util/tools.dart';
 import 'package:hshh/widgets/course_page/p_course.dart';
 import 'package:hshh/widgets/home/v_card_icon.dart';
 import 'package:lucide_icons/lucide_icons.dart';
@@ -62,12 +63,8 @@ class CourseSnippet extends StatelessWidget {
             heroTag: "course_${course.id}",
             border: Border.none,
             style: ColorStyles.plain,
-            onTap: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (_) => CoursePage(
-                          course: course, bit: context.bit<GroupInfoBit>())),
-                ),
+            onTap: () =>
+                pushPage(context, CoursePage(course: course, bit: null)),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [

@@ -2,14 +2,16 @@ import '../../util/elbe_ui/elbe.dart';
 
 class TField extends ThemedWidget {
   final TextEditingController controller;
-  final TextInputType keyboardType;
-  final Function(String value) onChanged;
+  final TextInputType? keyboardType;
+  final Function(String value)? onChanged;
   final String? label;
+  final int? maxLines;
   const TField(
       {super.key,
       required this.controller,
-      required this.keyboardType,
-      required this.onChanged,
+      this.keyboardType,
+      this.onChanged,
+      this.maxLines,
       this.label});
 
   @override
@@ -25,6 +27,7 @@ class TField extends ThemedWidget {
       controller: controller,
       keyboardType: keyboardType,
       onChanged: onChanged,
+      maxLines: maxLines,
       decoration: InputDecoration(
           //floatingLabelStyle: theme.type.bodyM.bold.toTextStyle(bColorA),
           //labelStyle: theme.type.bodyM.toTextStyle(theme.color.activeScheme.minorAccent.disabled.front),

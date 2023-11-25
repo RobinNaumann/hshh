@@ -16,6 +16,7 @@ extension _MergedBoxDecoration on BoxDecoration {
 
 class Box extends ThemedWidget {
   final Clip? clipBehavior;
+  final ColorModes? mode;
   final ColorSchemes scheme;
   final ColorStyles? style;
   final ColorStates? state;
@@ -42,6 +43,7 @@ class Box extends ThemedWidget {
   const Box(
       {super.key,
       this.clipBehavior,
+      this.mode,
       this.scheme = ColorSchemes.primary,
       this.style,
       this.state,
@@ -60,6 +62,7 @@ class Box extends ThemedWidget {
 
   const Box.plain(
       {super.key,
+      this.mode,
       this.clipBehavior,
       this.padding,
       this.margin,
@@ -80,7 +83,7 @@ class Box extends ThemedWidget {
   @override
   Widget make(context, theme) {
     final colorT = ColorTheme.of(context)
-        .copyWith(scheme: scheme, style: style, state: state);
+        .copyWith(mode: mode, scheme: scheme, style: style, state: state);
     final c = color ?? decoration?.color ?? colorT.activeLayer.back;
 
     return ColorTheme(

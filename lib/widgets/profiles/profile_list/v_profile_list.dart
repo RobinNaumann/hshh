@@ -34,7 +34,7 @@ class ProfileListView extends StatelessWidget {
                   id: e.key,
                   profile: e.value,
                   onPressed: onPressed,
-                  selected: e.key == selectedId)),
+                  selected: selectedId == null ? null : e.key == selectedId)),
               _addBtn(context),
             ].spaced()));
   }

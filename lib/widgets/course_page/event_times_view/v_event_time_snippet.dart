@@ -5,16 +5,22 @@ import 'package:hshh/util/tools.dart';
 import 'package:hshh/util/tri/tribit/tribit.dart';
 import 'package:hshh/widgets/booking_page/p_booking_data.dart';
 import 'package:intl/intl.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 
 import '../../../models/m_course.dart';
 import '../../../util/elbe_ui/elbe.dart';
 
 class EventTimeSnippet extends StatelessWidget {
+  final Uri groupLink;
   final Course course;
   final EventTime eventTime;
 
   const EventTimeSnippet(
-      {super.key, required this.eventTime, required this.course});
+      {super.key,
+      required this.eventTime,
+      required this.course,
+      required this.groupLink});
 
   String _dayHint(DateTime e) {
     final n = DateTime.now();
@@ -46,7 +52,7 @@ class EventTimeSnippet extends StatelessWidget {
                     sessionId: context.bit<EventTimesBit>().sessionId,
                     course: course,
                     time: eventTime))
-            : null,
+            : launchUrl(groupLink),
         child: Row(
           children: [
             Expanded(
@@ -74,7 +80,7 @@ class EventTimeSnippet extends StatelessWidget {
             ),
             if (!eventTime.state.isClosed)
               Icon(eventTime.state.isWaitinglist
-                  ? Icons.scrollText
+                  ? Icons.externalLink
                   : Icons.arrowRight)
           ],
         ));

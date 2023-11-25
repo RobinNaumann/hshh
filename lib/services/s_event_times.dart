@@ -16,13 +16,13 @@ class EventTimesSession {
 class EventTimesService {
   static final _uri =
       Uri.https('buchung.hochschulsport-hamburg.de', '/cgi/anmeldung.fcgi');
-
+//TODO: hack mit aktuellem Zeitraum
   static Future<EventTimesSession> getTimes(
       String groupLink, String bsCode, String bookingId) async {
     final html = parseHTML((await apiPost(uri: _uri, headers: {
       ...apiHeaders,
       "Referer":
-          "https://buchung.hochschulsport-hamburg.de/angebote/Wintersemester_2023_2024/_Pilates.html"
+          groupLink.replaceAll("aktueller_zeitraum", "Wintersemester_2023_2024")
     }, body: {
       "BS_Code": bsCode,
       bookingId: "Vormerkliste"

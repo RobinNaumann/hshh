@@ -1,7 +1,10 @@
 import 'package:hshh/bits/c_book.dart';
 import 'package:hshh/services/s_booking.dart';
 import 'package:hshh/util/elbe_ui/elbe.dart';
+import 'package:hshh/util/tools.dart';
 import 'package:hshh/util/tri/tribit/tribit.dart';
+import 'package:hshh/widgets/favorites/p_bookings.dart';
+import 'package:hshh/widgets/util/p_web.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 class BookingResultPage extends StatelessWidget {
@@ -41,32 +44,25 @@ class BookingResultPage extends StatelessWidget {
                                       .majorAlertSuccess
                                       .neutral,
                                 ),
-                                Text("Buchung\nerfolgreich",
+                                const Text("Buchung\nerfolgreich",
                                     style: TypeStyles.h3,
                                     textAlign: TextAlign.center),
                               ].spaced())),
                       Button.minor(
-                        label: "schließen",
-                        onTap: () =>
-                            Navigator.of(context).popUntil((r) => r.isFirst),
-                      )
+                          label: "schließen",
+                          onTap: () {
+                            final nav = Navigator.of(context);
+                            nav.popUntil((r) => r.isFirst);
+                            pushPage(context, const BookingsPage());
+                          })
                     ],
                   )))
-              : _WebPage(page: res.htmlMessage!)),
+              : HtmlPage(
+                  title: "Nachricht",
+                  html:
+                      "<style>body{background-color: transparent !important} #btn_cancel{display:none} </style> ${res.htmlMessage!}",
+                  baseUrl: "https://buchung.hochschulsport-hamburg.de/",
+                )),
     );
-  }
-}
-
-class _WebPage extends StatelessWidget {
-  final WebViewController ctrl = WebViewController();
-  _WebPage({required String page}) {
-    ctrl.loadHtmlString(
-        "<style>body{background-color: transparent !important} #btn_cancel{display:none} </style> $page",
-        baseUrl: "https://buchung.hochschulsport-hamburg.de/");
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return WebViewWidget(controller: ctrl);
   }
 }
