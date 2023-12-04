@@ -6,33 +6,32 @@ stages:
 before_script:
 - export GRADLE_USER_HOME=$(pwd)/android/.gradle
 - mkdir -p ${GRADLE_USER_HOME}
-- echo ${GRADLE_PROPS} | base64 -d > ${GRADLE_USER_HOME}/gradle.properties
 - chmod +x android/gradlew
 
 after_script:
-- rm -f ${GRADLE_USER_HOME}/gradle.properties
 
 build-debug:
-stage: build
-only:
-    - branches
-script:
-    - flutter build appbundle --debug
+    stage: build
+    only:
+        - branches
+    script:
+        - flutter build appbundle --debug
 
 publish-play:
-stage: build
-only:
-    - /^play-\d+$/
-script:
-    - cd android
-    - export BUILD_NUMBER=`echo ${CI_COMMIT_REF_NAME} | grep -oP "(?<=play-)(\d+)"`
-    - echo ${PLAY_KEY} > app-publish-key.json
-    - echo ${KEYSTORE} | base64 -d > keystore.jks
-    - flutter build appbundle --build-number ${BUILD_NUMBER} --build-name ${CI_COMMIT_SHORT_SHA}
-    - cp ../build/app/outputs/mapping/release/mapping.txt ../build/app/outputs/bundle/release/
-    - ./gradlew publishBundle
-after_script:
-    - rm -f android/app-publish-key.json android/keystore.jks
-artifacts:
-    paths:
-    - build/app/outputs/bundle/release/*
+    stage: build
+    only:
+        - /^play-\d+$/
+    script:
+        - cd android
+        - export BUILD_NUMBER=`echo ${CI_COMMIT_REF_NAME} | grep -oP "(?<=play-)(\d+)"`
+        - echo ${PLAY_KEY} > app-publish-key.json
+        - echo ${KEYSTORE} | base64 -d > keystore.jks
+        - echo ${GRADLE_PROPS} | base64 -d > key.properties
+        - flutter build appbundle --build-number ${BUILD_NUMBER} --build-name ${CI_COMMIT_SHORT_SHA}
+        - cp ../build/app/outputs/mapping/release/mapping.txt ../build/app/outputs/bundle/release/
+        - ./gradlew publishBundle
+    after_script:
+        - rm -f android/app-publish-key.json android/keystore.jks  android/key.properties
+    artifacts:
+        paths:
+        - build/app/outputs/bundle/release/*
