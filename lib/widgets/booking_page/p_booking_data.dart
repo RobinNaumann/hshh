@@ -9,6 +9,7 @@ import 'package:hshh/widgets/booking_page/p_booking_confirm.dart';
 import 'package:hshh/widgets/booking_page/v_booking_offer.dart';
 import 'package:hshh/widgets/profiles/profile_list/v_profile_list.dart';
 import 'package:url_launcher/url_launcher_string.dart';
+import 'package:flutter/gestures.dart';
 
 import '../../bits/c_profiles.dart';
 import '../../models/m_course.dart';
@@ -154,7 +155,7 @@ class _TermsCheckbox extends StatelessWidget {
               text:
                   'Allgemeinen Geschäftsbedingungen (AGB) des Hochschulsports Hamburg.',
               style: TextStyle(color: accent),
-              recognizer: TapAndPanGestureRecognizer()
+              recognizer: TapGestureRecognizer()
                 ..onTapUp = (_) {
                   launchUrlString(
                       'https://www.hochschulsport.uni-hamburg.de/informationen/agb.html');
