@@ -6,7 +6,7 @@ stages:
 before_script:
 - export GRADLE_USER_HOME=$(pwd)/android/.gradle
 - mkdir -p ${GRADLE_USER_HOME}
-#- chmod +x android/gradlew
+- chmod +x android/gradlew
 
 after_script:
 
