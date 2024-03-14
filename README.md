@@ -1,16 +1,28 @@
 # hshh
+an inofficial app for the student sports in Hamburg
 
-A new Flutter project.
+## about
+HsHH is an inofficial app for student sports in Hamburg. It allows you to
+  browse the current sports offers and sign up for them. The app is not
+  affiliated with the university or the sports department.
+  The app is open source and free to use. It does not track you or show ads.
 
-## Getting Started
+## download
+- Android
+    - **[my website](https://apps.robbb.in/HsHH)**
+    - the Github *Releases* Page
+    - Play Store: 
+        1. join the [internal testers group](https://groups.google.com/g/peertest-org)
+        2. download the app [here](https://play.google.com/apps/testing/de.robin.hshh)
+- iOS
+    - putting the app in the App Store costs about 100€/Year. This is a little pricy for me. Because of this, you can only install the app on iOS by *building* it yourself
 
-This project is a starting point for a Flutter application.
+<br>
 
-A few resources to get you started if this is your first Flutter project:
+> **NOTE:**<br>
+> to install the app, you must first [allow unknown sources](https://www.droidwiki.org/wiki/Sideloading)
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+## contribute
+- feel free to contact me when you find issues or have ideas
+- consider buying me a coffee ☕️☺️
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.

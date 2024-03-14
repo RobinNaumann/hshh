@@ -1,0 +1,24 @@
+# dego is a simple knowledge management tool. It allows me to publish
+# information about projects, tools in a decentralized way.
+# for a usecase, check out apps.robbb.in
+
+name: HsHH
+authors: 
+  - ref: https://gist.githubusercontent.com/RobinNaumann/7d9d5b8902a697cda1f0ba2c5b7234c6/raw/46ebed8489de7e4458335ae434fee986d594504b/robin.degu.yaml
+    role: developer
+tagline: inofficial app for student sports in Hamburg
+about: >
+  HsHH is an inofficial app for student sports in Hamburg. It allows you to
+  browse the current sports offers and sign up for them. The app is not
+  affiliated with the university or the sports department.
+  The app is open source and free to use. It does not track you or show ads.
+icon: https://raw.githubusercontent.com/RobinNaumann/hshh/main/assets/img/app_icon.png
+source: https://github.com/RobinNaumann/hshh
+donate: https://www.buymeacoffee.com/robinnaumann
+# screenshots:
+releases: 
+  - version: 0.4.4+2
+    notes: improved course parsing
+    downloads:
+      - platform: Android
+        url: https://raw.githubusercontent.com/RobinNaumann/hshh/main/releases/hshh_0.4.4.apk
